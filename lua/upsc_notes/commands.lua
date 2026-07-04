@@ -65,3 +65,4 @@ vim.api.nvim_create_user_command("ToggleReadEdit", actions.toggle_read_edit_mode
 vim.api.nvim_create_user_command("StudyMode", actions.enable_study_mode, {})
 vim.api.nvim_create_user_command("StudyModeOff", actions.disable_study_mode, {})
 vim.api.nvim_create_user_command("ToggleStudyMode", actions.toggle_study_mode, {})
+vim.api.nvim_create_user_command("MarkdownRenderToggle", actions.toggle_markdown_render, {})

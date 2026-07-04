@@ -361,6 +361,16 @@ function M.toggle_study_mode()
   end
 end
 
+function M.toggle_markdown_render()
+  local ok, render = pcall(require, "render-markdown")
+  if not ok then
+    vim.notify("render-markdown.nvim is not available", vim.log.levels.WARN)
+    return
+  end
+
+  render.toggle()
+end
+
 function M.open_dashboard()
   vim.cmd("cd " .. vim.fn.fnameescape(paths.vault_root))
   vim.cmd("Alpha")

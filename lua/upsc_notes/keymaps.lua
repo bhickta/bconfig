@@ -36,6 +36,7 @@ map("n", "<leader>rr", actions.toggle_read_edit_mode, "Toggle read/edit mode")
 map("n", "<leader>re", actions.set_edit_mode, "Edit mode")
 map("n", "<leader>ro", actions.set_read_mode, "Read-only mode")
 map("n", "<leader>rs", actions.toggle_study_mode, "Toggle study mode")
+map("n", "<leader>rm", actions.toggle_markdown_render, "Toggle markdown render")
 
 map("n", "<leader>ov", actions.open_zettelkasten_dir, "Open zettelkasten directory")
 map("n", "<leader>h", actions.open_dashboard, "Home dashboard")

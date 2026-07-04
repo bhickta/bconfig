@@ -154,6 +154,126 @@ return {
     end,
   },
   {
+    "nvim-treesitter/nvim-treesitter",
+    branch = "master",
+    build = ":TSUpdate",
+    event = { "BufReadPost", "BufNewFile" },
+    opts = {
+      ensure_installed = { "markdown", "markdown_inline", "yaml", "html" },
+      highlight = {
+        enable = true,
+      },
+      indent = {
+        enable = false,
+      },
+    },
+    config = function(_, opts)
+      require("nvim-treesitter.configs").setup(opts)
+    end,
+  },
+  {
+    "MeanderingProgrammer/render-markdown.nvim",
+    ft = "markdown",
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter",
+      "nvim-tree/nvim-web-devicons",
+    },
+    opts = {
+      enabled = true,
+      preset = "obsidian",
+      render_modes = { "n", "c", "t" },
+      max_file_size = 8.0,
+      debounce = 80,
+      file_types = { "markdown" },
+      completions = {
+        lsp = {
+          enabled = false,
+        },
+      },
+      heading = {
+        enabled = true,
+        sign = false,
+        width = "full",
+        right_pad = 1,
+        icons = { "󰲡 ", "󰲣 ", "󰲥 ", "󰲧 ", "󰲩 ", "󰲫 " },
+        backgrounds = {
+          "RenderMarkdownH1Bg",
+          "RenderMarkdownH2Bg",
+          "RenderMarkdownH3Bg",
+          "RenderMarkdownH4Bg",
+          "RenderMarkdownH5Bg",
+          "RenderMarkdownH6Bg",
+        },
+        foregrounds = {
+          "RenderMarkdownH1",
+          "RenderMarkdownH2",
+          "RenderMarkdownH3",
+          "RenderMarkdownH4",
+          "RenderMarkdownH5",
+          "RenderMarkdownH6",
+        },
+      },
+      code = {
+        enabled = true,
+        sign = false,
+        style = "full",
+        position = "left",
+        language_pad = 1,
+        left_pad = 1,
+        right_pad = 1,
+        min_width = 60,
+        border = "thin",
+      },
+      bullet = {
+        enabled = true,
+        icons = { "•", "◦", "▪", "▫" },
+      },
+      checkbox = {
+        enabled = true,
+        unchecked = {
+          icon = "󰄱 ",
+        },
+        checked = {
+          icon = "󰱒 ",
+        },
+      },
+      quote = {
+        enabled = true,
+        icon = "▌",
+      },
+      pipe_table = {
+        enabled = true,
+        preset = "round",
+      },
+      callout = {
+        note = { raw = "[!NOTE]", rendered = "󰋽 Note", highlight = "RenderMarkdownInfo" },
+        tip = { raw = "[!TIP]", rendered = "󰌶 Tip", highlight = "RenderMarkdownSuccess" },
+        important = { raw = "[!IMPORTANT]", rendered = "󰅾 Important", highlight = "RenderMarkdownHint" },
+        warning = { raw = "[!WARNING]", rendered = "󰀪 Warning", highlight = "RenderMarkdownWarn" },
+        caution = { raw = "[!CAUTION]", rendered = "󰳦 Caution", highlight = "RenderMarkdownError" },
+      },
+      link = {
+        enabled = true,
+        image = "󰥶 ",
+        email = "󰀓 ",
+        hyperlink = "󰌹 ",
+        wiki = {
+          icon = "󰖟 ",
+        },
+      },
+      win_options = {
+        conceallevel = {
+          default = 2,
+          rendered = 3,
+        },
+        concealcursor = {
+          default = "nc",
+          rendered = "",
+        },
+      },
+    },
+  },
+  {
     "nvim-neo-tree/neo-tree.nvim",
     branch = "v3.x",
     cmd = "Neotree",
@@ -259,15 +379,5 @@ return {
       },
       disable_frontmatter = true,
     },
-  },
-  {
-    "preservim/vim-markdown",
-    ft = "markdown",
-    init = function()
-      vim.g.vim_markdown_folding_disabled = 1
-      vim.g.vim_markdown_conceal = 0
-      vim.g.vim_markdown_conceal_code_blocks = 0
-      vim.g.vim_markdown_frontmatter = 1
-    end,
   },
 }
