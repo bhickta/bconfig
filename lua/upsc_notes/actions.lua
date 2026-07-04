@@ -290,6 +290,19 @@ function M.toggle_tree_focus()
   M.reveal_current_note()
 end
 
+function M.focus_tree_panel()
+  if vim.bo.filetype == "neo-tree" then
+    vim.cmd.wincmd("p")
+  else
+    require("neo-tree.command").execute({
+      action = "focus",
+      source = "filesystem",
+      position = "left",
+      dir = active_root_dir(),
+    })
+  end
+end
+
 function M.jump_to_next_wikilink()
   vim.fn.search("\\[\\[[^]]\\+\\]\\]", "W")
 end

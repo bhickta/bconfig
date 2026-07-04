@@ -56,6 +56,8 @@ vim.api.nvim_create_autocmd("FileType", {
       { "<leader>tc", actions.reveal_current_note, "Reveal current note" },
       { "<leader>tf", actions.focus_tree, "Focus tree here" },
       { "<leader>tu", actions.unfocus_tree, "Unfocus tree" },
+      { "<leader>e", actions.toggle_tree, "Toggle Explorer" },
+      { "<leader>o", actions.focus_tree_panel, "Toggle Explorer Focus" },
     }
 
     for _, map in ipairs(maps) do
