@@ -60,19 +60,11 @@ function M.open_zettel_tree()
   open_tree_at(paths.zettel_root)
 end
 
-function M.open_ajay_tree()
-  open_tree_at(paths.ajay_root)
-end
-
-function M.open_ajay_index()
-  edit(paths.ajay_index)
-end
-
 function M.reveal_current_note()
   vim.cmd("Neotree filesystem reveal left")
 end
 
-function M.focus_current_study_tree()
+function M.focus_tree()
   local current = vim.api.nvim_buf_get_name(0)
   if current == "" then
     M.open_zettel_tree()
@@ -80,11 +72,6 @@ function M.focus_current_study_tree()
   end
 
   local dir = vim.fn.fnamemodify(current, ":h")
-
-  if current:find(paths.ajay_root, 1, true) == 1 then
-    open_tree_at(paths.ajay_root)
-    return
-  end
 
   if current:find(paths.inbox_root, 1, true) == 1 then
     local relative = current:sub(#paths.inbox_root + 2)
@@ -111,8 +98,8 @@ function M.focus_current_study_tree()
   open_tree_at(dir)
 end
 
-function M.open_home()
-  edit(paths.home_note)
+function M.unfocus_tree()
+  M.open_zettel_tree()
 end
 
 function M.open_zettelkasten_dir()
@@ -125,11 +112,6 @@ end
 
 function M.open_polity()
   edit(paths.polity_index)
-end
-
-function M.open_mapping_section()
-  M.open_home()
-  vim.fn.search("^## Mapping", "W")
 end
 
 function M.open_parent_waypoint()
@@ -183,11 +165,6 @@ function M.toggle_read_edit_mode()
   else
     M.set_edit_mode()
   end
-end
-
-function M.open_home_read_only()
-  M.open_home()
-  M.set_read_mode()
 end
 
 function M.open_dashboard()

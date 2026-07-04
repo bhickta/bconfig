@@ -26,21 +26,21 @@ return {
       }
 
       dashboard.section.buttons.val = {
-        dashboard.button("h", "  Home note", "<cmd>Home<CR>"),
         dashboard.button("t", "  Zettelkasten tree", "<cmd>Ztree<CR>"),
+        dashboard.button("v", "󰉋  Vault tree", "<cmd>VaultTree<CR>"),
         dashboard.button("w", "󰈙  Waypoint indexes", "<cmd>Waypoints<CR>"),
         dashboard.button("z", "󰱼  Find zettelkasten note", "<cmd>Zettel<CR>"),
         dashboard.button("g", "  Search zettelkasten text", "<cmd>Zgrep<CR>"),
-        dashboard.button("a", "󰙅  Ajay Governance notes", "<cmd>AjayTree<CR>"),
+        dashboard.button("f", "󰉋  Focus tree on current scope", "<cmd>FocusTree<CR>"),
+        dashboard.button("u", "󰁌  Unfocus tree to zettelkasten", "<cmd>UnfocusTree<CR>"),
         dashboard.button("p", "󰊄  Polity index", "<cmd>Polity<CR>"),
         dashboard.button("e", "󰯂  Ethics index", "<cmd>Ethics<CR>"),
-        dashboard.button("r", "  Home in read mode", "<cmd>HomeRead<CR>"),
         dashboard.button("q", "󰅚  Quit", "<cmd>qa<CR>"),
       }
 
       dashboard.section.footer.val = {
         "",
-        "Enter/gd follow links   Backspace jump back   Space rr read/edit   Space t z tree",
+        "Enter/gd follow links   Backspace jump back   Space rr read/edit   Space t f focus",
       }
 
       dashboard.section.header.opts.hl = "Title"
