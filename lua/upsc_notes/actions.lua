@@ -6,6 +6,13 @@ local function telescope()
   return require("telescope.builtin")
 end
 
+local function snacks_picker()
+  local ok, snacks = pcall(require, "snacks")
+  if ok and snacks.picker then
+    return snacks.picker
+  end
+end
+
 local function edit(path)
   vim.cmd("edit " .. vim.fn.fnameescape(path))
 end
@@ -24,32 +31,127 @@ local function open_tree_at(path)
   vim.cmd("Neotree filesystem reveal left dir=" .. vim.fn.fnameescape(path))
 end
 
+local function current_scope_dir()
+  local current = vim.api.nvim_buf_get_name(0)
+  if current == "" then
+    return paths.zettel_root
+  end
+
+  local dir = vim.fn.fnamemodify(current, ":h")
+
+  if current:find(paths.inbox_root, 1, true) == 1 then
+    local relative = current:sub(#paths.inbox_root + 2)
+    local top = relative:match("^([^/]+)")
+    if top then
+      return paths.inbox_root .. "/" .. top
+    end
+  end
+
+  if current:find(paths.zettel_root, 1, true) == 1 then
+    local relative = current:sub(#paths.zettel_root + 2)
+    local subject = relative:match("^([^/]+)")
+    local chapter = relative:match("^[^/]+/([^/]+)")
+    if subject and chapter then
+      return paths.zettel_root .. "/" .. subject .. "/" .. chapter
+    elseif subject then
+      return paths.zettel_root .. "/" .. subject
+    end
+  end
+
+  return dir
+end
+
+local function find_files(opts)
+  opts.hidden = true
+  opts.ignored = false
+
+  local picker = snacks_picker()
+  if picker then
+    picker.files(opts)
+    return
+  end
+
+  telescope().find_files({ cwd = opts.cwd, prompt_title = opts.title or opts.prompt_title })
+end
+
+local function grep(opts)
+  opts.hidden = true
+  opts.ignored = false
+
+  local picker = snacks_picker()
+  if picker then
+    picker.grep(opts)
+    return
+  end
+
+  telescope().live_grep({
+    cwd = opts.cwd,
+    default_text = opts.search,
+    prompt_title = opts.title or opts.prompt_title,
+  })
+end
+
 function M.find_vault_file()
-  telescope().find_files({ cwd = paths.vault_root, prompt_title = "Vault files" })
+  find_files({ cwd = paths.vault_root, title = "Vault files" })
 end
 
 function M.find_zettel_note()
-  telescope().find_files({ cwd = paths.zettel_root, prompt_title = "Zettelkasten files" })
+  find_files({ cwd = paths.zettel_root, title = "Zettelkasten files" })
 end
 
 function M.grep_zettel()
-  telescope().live_grep({ cwd = paths.zettel_root, prompt_title = "Grep zettelkasten" })
+  grep({ cwd = paths.zettel_root, title = "Grep zettelkasten" })
 end
 
 function M.grep_vault()
-  telescope().live_grep({ cwd = paths.vault_root, prompt_title = "Grep full vault" })
+  grep({ cwd = paths.vault_root, title = "Grep full vault" })
 end
 
 function M.search_word()
-  telescope().grep_string({ cwd = paths.zettel_root, search = vim.fn.expand("<cword>") })
+  local word = vim.fn.expand("<cword>")
+  local picker = snacks_picker()
+  if picker then
+    picker.grep_word({ cwd = paths.zettel_root, search = word })
+    return
+  end
+
+  telescope().grep_string({ cwd = paths.zettel_root, search = word })
 end
 
 function M.find_headings()
-  telescope().live_grep({ cwd = paths.zettel_root, default_text = "^# ", prompt_title = "Headings" })
+  grep({ cwd = paths.zettel_root, search = "^# ", title = "Headings" })
 end
 
 function M.find_waypoints()
-  telescope().grep_string({ cwd = paths.zettel_root, search = "%% Begin Waypoint %%" })
+  grep({ cwd = paths.zettel_root, search = "%% Begin Waypoint %%", title = "Waypoint indexes" })
+end
+
+function M.find_scope_file()
+  find_files({ cwd = current_scope_dir(), title = "Scope files" })
+end
+
+function M.grep_scope()
+  grep({ cwd = current_scope_dir(), title = "Grep current scope" })
+end
+
+function M.recent_notes()
+  local picker = snacks_picker()
+  if picker then
+    picker.recent({ cwd = paths.vault_root, filter = { cwd = true } })
+    return
+  end
+
+  telescope().oldfiles({ cwd = paths.vault_root, prompt_title = "Recent vault files" })
+end
+
+function M.resume_picker()
+  local picker = snacks_picker()
+  if picker then
+    picker.resume()
+    return
+  end
+
+  telescope().resume()
 end
 
 function M.open_vault_tree()
@@ -65,37 +167,7 @@ function M.reveal_current_note()
 end
 
 function M.focus_tree()
-  local current = vim.api.nvim_buf_get_name(0)
-  if current == "" then
-    M.open_zettel_tree()
-    return
-  end
-
-  local dir = vim.fn.fnamemodify(current, ":h")
-
-  if current:find(paths.inbox_root, 1, true) == 1 then
-    local relative = current:sub(#paths.inbox_root + 2)
-    local top = relative:match("^([^/]+)")
-    if top then
-      open_tree_at(paths.inbox_root .. "/" .. top)
-      return
-    end
-  end
-
-  if current:find(paths.zettel_root, 1, true) == 1 then
-    local relative = current:sub(#paths.zettel_root + 2)
-    local subject = relative:match("^([^/]+)")
-    local chapter = relative:match("^[^/]+/([^/]+)")
-    if subject and chapter then
-      open_tree_at(paths.zettel_root .. "/" .. subject .. "/" .. chapter)
-      return
-    elseif subject then
-      open_tree_at(paths.zettel_root .. "/" .. subject)
-      return
-    end
-  end
-
-  open_tree_at(dir)
+  open_tree_at(current_scope_dir())
 end
 
 function M.unfocus_tree()

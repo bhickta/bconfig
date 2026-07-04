@@ -31,6 +31,9 @@ return {
         dashboard.button("w", "󰈙  Waypoint indexes", "<cmd>Waypoints<CR>"),
         dashboard.button("z", "󰱼  Find zettelkasten note", "<cmd>Zettel<CR>"),
         dashboard.button("g", "  Search zettelkasten text", "<cmd>Zgrep<CR>"),
+        dashboard.button("s", "󰱼  Find in current scope", "<cmd>ScopeFiles<CR>"),
+        dashboard.button("/", "󰱽  Search current scope", "<cmd>ScopeGrep<CR>"),
+        dashboard.button("r", "󱋡  Recent vault notes", "<cmd>RecentNotes<CR>"),
         dashboard.button("f", "󰉋  Focus tree on current scope", "<cmd>FocusTree<CR>"),
         dashboard.button("u", "󰁌  Unfocus tree to zettelkasten", "<cmd>UnfocusTree<CR>"),
         dashboard.button("p", "󰊄  Polity index", "<cmd>Polity<CR>"),
@@ -40,7 +43,7 @@ return {
 
       dashboard.section.footer.val = {
         "",
-        "Enter/gd follow links   Backspace jump back   Space rr read/edit   Space t f focus",
+        "Space f z files   Space f g text   Space f / scope   Space rr read/edit",
       }
 
       dashboard.section.header.opts.hl = "Title"
@@ -50,6 +53,20 @@ return {
 
       alpha.setup(dashboard.opts)
     end,
+  },
+  {
+    "folke/snacks.nvim",
+    lazy = false,
+    priority = 1000,
+    opts = {
+      input = {},
+      picker = {
+        ui_select = true,
+        layout = {
+          preset = "ivy",
+        },
+      },
+    },
   },
   {
     "folke/which-key.nvim",
