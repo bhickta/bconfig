@@ -219,6 +219,56 @@ function M.resume_picker()
   telescope().resume()
 end
 
+function M.find_buffers()
+  local picker = snacks_picker()
+  if picker then
+    picker.buffers()
+    return
+  end
+
+  telescope().buffers()
+end
+
+function M.find_commands()
+  local picker = snacks_picker()
+  if picker then
+    picker.commands()
+    return
+  end
+
+  telescope().commands()
+end
+
+function M.find_keymaps()
+  local picker = snacks_picker()
+  if picker then
+    picker.keymaps()
+    return
+  end
+
+  telescope().keymaps()
+end
+
+function M.find_marks()
+  local picker = snacks_picker()
+  if picker then
+    picker.marks()
+    return
+  end
+
+  telescope().marks()
+end
+
+function M.find_undo()
+  local picker = snacks_picker()
+  if picker and picker.undo then
+    picker.undo()
+    return
+  end
+
+  vim.notify("Undo picker is not available", vim.log.levels.WARN)
+end
+
 function M.open_vault_tree()
   open_tree_at(paths.vault_root)
 end
@@ -385,6 +435,23 @@ function M.toggle_markdown_render()
   end
 
   render.toggle()
+end
+
+function M.toggle_zen()
+  local ok, snacks = pcall(require, "snacks")
+  if ok and snacks.zen then
+    snacks.zen()
+    return
+  end
+
+  vim.notify("Snacks zen is not available", vim.log.levels.WARN)
+end
+
+function M.dismiss_notifications()
+  local ok, notifier = pcall(require, "snacks.notifier")
+  if ok then
+    notifier.hide()
+  end
 end
 
 function M.open_dashboard()
