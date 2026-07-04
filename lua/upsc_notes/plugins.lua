@@ -5,6 +5,33 @@ return {
     "nvim-lua/plenary.nvim",
   },
   {
+    "catppuccin/nvim",
+    name = "catppuccin",
+    lazy = false,
+    priority = 1100,
+    config = function()
+      require("catppuccin").setup({
+        flavour = "mocha",
+        transparent_background = false,
+        show_end_of_buffer = false,
+        term_colors = true,
+        dim_inactive = {
+          enabled = false,
+        },
+        integrations = {
+          native_lsp = false,
+          telescope = true,
+          which_key = true,
+          markdown = true,
+          neotree = true,
+          snacks = true,
+        },
+      })
+      vim.cmd.colorscheme("catppuccin-mocha")
+      require("upsc_notes.ui").setup()
+    end,
+  },
+  {
     "goolord/alpha-nvim",
     cmd = "Alpha",
     dependencies = { "nvim-tree/nvim-web-devicons" },
@@ -46,9 +73,9 @@ return {
         "Space f z files   Space f g text   Space f / scope   Space rr read/edit",
       }
 
-      dashboard.section.header.opts.hl = "Title"
-      dashboard.section.buttons.opts.hl = "Keyword"
-      dashboard.section.footer.opts.hl = "Comment"
+      dashboard.section.header.opts.hl = "UpscDashboardHeader"
+      dashboard.section.buttons.opts.hl = "UpscDashboardButton"
+      dashboard.section.footer.opts.hl = "UpscDashboardFooter"
       dashboard.opts.opts.noautocmd = true
 
       alpha.setup(dashboard.opts)
