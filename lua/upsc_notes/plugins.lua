@@ -90,6 +90,17 @@ return {
       input = {},
       picker = {
         ui_select = true,
+        matcher = {
+          fuzzy = true,
+          smartcase = true,
+          ignorecase = true,
+          sort_empty = false,
+          filename_bonus = true,
+          file_pos = true,
+          cwd_bonus = true,
+          frecency = false,
+          history_bonus = false,
+        },
         layout = {
           preset = "ivy",
         },

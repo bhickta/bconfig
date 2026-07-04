@@ -31,6 +31,39 @@ local function open_tree_at(path)
   vim.cmd("Neotree filesystem reveal left dir=" .. vim.fn.fnameescape(path))
 end
 
+local function picker_defaults(opts)
+  return vim.tbl_deep_extend("force", {
+    matcher = {
+      fuzzy = true,
+      smartcase = true,
+      ignorecase = true,
+      sort_empty = false,
+      filename_bonus = true,
+      file_pos = true,
+      cwd_bonus = true,
+      frecency = false,
+      history_bonus = false,
+    },
+    sort = {
+      fields = { "score:desc", "#text", "idx" },
+    },
+    debug = {},
+  }, opts or {})
+end
+
+local function file_command()
+  if vim.fn.executable("rg") == 1 then
+    return "rg"
+  end
+  if vim.fn.executable("fd") == 1 then
+    return "fd"
+  end
+  if vim.fn.executable("fdfind") == 1 then
+    return "fdfind"
+  end
+  return "find"
+end
+
 local function current_scope_dir()
   local current = vim.api.nvim_buf_get_name(0)
   if current == "" then
@@ -64,6 +97,8 @@ end
 local function find_files(opts)
   opts.hidden = true
   opts.ignored = false
+  opts.cmd = opts.cmd or file_command()
+  opts = picker_defaults(opts)
 
   local picker = snacks_picker()
   if picker then
@@ -75,8 +110,14 @@ local function find_files(opts)
 end
 
 local function grep(opts)
+  if vim.fn.executable("rg") ~= 1 then
+    vim.notify("Content search needs ripgrep: install rg for live grep.", vim.log.levels.WARN)
+    return
+  end
+
   opts.hidden = true
   opts.ignored = false
+  opts = picker_defaults(opts)
 
   local picker = snacks_picker()
   if picker then
@@ -111,7 +152,11 @@ function M.search_word()
   local word = vim.fn.expand("<cword>")
   local picker = snacks_picker()
   if picker then
-    picker.grep_word({ cwd = paths.zettel_root, search = word })
+    if vim.fn.executable("rg") ~= 1 then
+      vim.notify("Content search needs ripgrep: install rg for live grep.", vim.log.levels.WARN)
+      return
+    end
+    picker.grep_word(picker_defaults({ cwd = paths.zettel_root, search = word }))
     return
   end
 

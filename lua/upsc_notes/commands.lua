@@ -19,9 +19,33 @@ vim.api.nvim_create_user_command("RevealNote", actions.reveal_current_note, {})
 
 vim.api.nvim_create_user_command("Zgrep", function(opts)
   if opts.args ~= "" then
+    if vim.fn.executable("rg") ~= 1 then
+      vim.notify("Content search needs ripgrep: install rg for live grep.", vim.log.levels.WARN)
+      return
+    end
+
     local ok, snacks = pcall(require, "snacks")
     if ok and snacks.picker then
-      snacks.picker.grep({ cwd = paths.zettel_root, search = opts.args, title = "Grep zettelkasten" })
+      snacks.picker.grep({
+        cwd = paths.zettel_root,
+        search = opts.args,
+        title = "Grep zettelkasten",
+        hidden = true,
+        ignored = false,
+        matcher = {
+          fuzzy = true,
+          smartcase = true,
+          ignorecase = true,
+          sort_empty = false,
+          filename_bonus = true,
+          file_pos = true,
+          cwd_bonus = true,
+        },
+        sort = {
+          fields = { "score:desc", "#text", "idx" },
+        },
+        debug = {},
+      })
       return
     end
   end
