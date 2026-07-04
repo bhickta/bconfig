@@ -56,6 +56,7 @@ return {
   },
   {
     "folke/snacks.nvim",
+    commit = "3a8ecf591263e4706d9b3a45da590df914ea5505",
     lazy = false,
     priority = 1000,
     opts = {
