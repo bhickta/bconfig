@@ -295,16 +295,39 @@ function M.jump_to_prev_wikilink()
   vim.fn.search("\\[\\[[^]]\\+\\]\\]", "bW")
 end
 
+local function set_reading_window(enabled)
+  vim.wo.number = true
+  vim.wo.relativenumber = not enabled
+  vim.wo.signcolumn = enabled and "no" or "yes"
+  vim.wo.foldcolumn = "0"
+  vim.wo.cursorline = not enabled
+  vim.wo.list = false
+end
+
+local function set_markdown_reading_buffer(enabled)
+  vim.opt_local.wrap = true
+  vim.opt_local.linebreak = true
+  vim.opt_local.breakindent = true
+  vim.opt_local.breakindentopt = "shift:2,min:40,sbr"
+  vim.opt_local.showbreak = "  "
+  vim.opt_local.conceallevel = enabled and 2 or 1
+  vim.opt_local.concealcursor = enabled and "nc" or ""
+  vim.opt_local.colorcolumn = ""
+end
+
 function M.set_read_mode()
   vim.opt_local.readonly = true
   vim.opt_local.modifiable = false
-  vim.opt_local.conceallevel = 1
+  set_markdown_reading_buffer(true)
+  set_reading_window(true)
   vim.notify("Read mode: buffer locked", vim.log.levels.INFO)
 end
 
 function M.set_edit_mode()
   vim.opt_local.modifiable = true
   vim.opt_local.readonly = false
+  set_markdown_reading_buffer(false)
+  set_reading_window(false)
   vim.notify("Edit mode: buffer unlocked", vim.log.levels.INFO)
 end
 
@@ -313,6 +336,28 @@ function M.toggle_read_edit_mode()
     M.set_read_mode()
   else
     M.set_edit_mode()
+  end
+end
+
+function M.enable_study_mode()
+  vim.b.upsc_study_mode = true
+  set_markdown_reading_buffer(true)
+  set_reading_window(true)
+  vim.notify("Study mode: clean reading area", vim.log.levels.INFO)
+end
+
+function M.disable_study_mode()
+  vim.b.upsc_study_mode = false
+  set_markdown_reading_buffer(false)
+  set_reading_window(false)
+  vim.notify("Study mode off", vim.log.levels.INFO)
+end
+
+function M.toggle_study_mode()
+  if vim.b.upsc_study_mode then
+    M.disable_study_mode()
+  else
+    M.enable_study_mode()
   end
 end
 

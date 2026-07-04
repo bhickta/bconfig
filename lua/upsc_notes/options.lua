@@ -3,6 +3,8 @@ vim.opt.relativenumber = true
 vim.opt.mouse = ""
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
+vim.opt.cursorline = true
+vim.opt.signcolumn = "yes"
 vim.opt.splitright = true
 vim.opt.splitbelow = true
 vim.opt.termguicolors = true
@@ -10,4 +12,23 @@ vim.opt.updatetime = 250
 vim.opt.timeoutlen = 400
 vim.opt.undofile = true
 vim.opt.grepprg = "rg --vimgrep --smart-case"
-
+vim.opt.scrolloff = 8
+vim.opt.sidescrolloff = 12
+vim.opt.showmode = false
+vim.opt.laststatus = 3
+vim.opt.cmdheight = 1
+vim.opt.fillchars = {
+  eob = " ",
+  fold = " ",
+  foldopen = "-",
+  foldclose = "+",
+  foldsep = " ",
+  diff = " ",
+  msgsep = " ",
+}
+vim.opt.list = false
+vim.opt.listchars = {
+  tab = "  ",
+  trail = ".",
+  nbsp = "+",
+}
