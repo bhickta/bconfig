@@ -83,7 +83,6 @@ return {
   },
   {
     "folke/snacks.nvim",
-    commit = "3a8ecf591263e4706d9b3a45da590df914ea5505",
     lazy = false,
     priority = 1000,
     opts = {
@@ -131,7 +130,6 @@ return {
   },
   {
     "nvim-telescope/telescope.nvim",
-    branch = "0.1.x",
     dependencies = { "nvim-lua/plenary.nvim" },
     config = function()
       require("telescope").setup({
@@ -155,20 +153,35 @@ return {
   },
   {
     "nvim-treesitter/nvim-treesitter",
-    branch = "master",
+    branch = "main",
+    lazy = false,
     build = ":TSUpdate",
-    event = { "BufReadPost", "BufNewFile" },
     opts = {
-      ensure_installed = { "markdown", "markdown_inline", "yaml", "html" },
-      highlight = {
-        enable = true,
-      },
-      indent = {
-        enable = false,
-      },
+      install_dir = vim.fn.stdpath("data") .. "/site",
+      ensure_installed = { "markdown", "markdown_inline", "yaml", "html", "lua", "vim", "vimdoc" },
     },
     config = function(_, opts)
-      require("nvim-treesitter.configs").setup(opts)
+      local treesitter = require("nvim-treesitter")
+      treesitter.setup({
+        install_dir = opts.install_dir,
+      })
+
+      local installed = treesitter.get_installed()
+      local missing = vim.tbl_filter(function(parser)
+        return not vim.tbl_contains(installed, parser)
+      end, opts.ensure_installed)
+
+      if #missing > 0 then
+        treesitter.install(missing):wait(300000)
+      end
+
+      vim.api.nvim_create_autocmd("FileType", {
+        group = vim.api.nvim_create_augroup("UpscNotesTreesitter", { clear = true }),
+        pattern = { "markdown", "yaml", "html", "lua", "vim", "vimdoc" },
+        callback = function()
+          pcall(vim.treesitter.start)
+        end,
+      })
     end,
   },
   {
@@ -351,7 +364,7 @@ return {
   },
   {
     "epwalsh/obsidian.nvim",
-    version = "*",
+    branch = "main",
     ft = "markdown",
     dependencies = { "nvim-lua/plenary.nvim", "nvim-telescope/telescope.nvim" },
     opts = {
