@@ -1,0 +1,35 @@
+local actions = require("upsc_notes.actions")
+
+local function map(mode, lhs, rhs, desc)
+  vim.keymap.set(mode, lhs, rhs, { silent = true, noremap = true, desc = desc })
+end
+
+map("n", "<leader>ff", actions.find_vault_file, "Find vault file")
+map("n", "<leader>fz", actions.find_zettel_note, "Find zettelkasten note")
+map("n", "<leader>fg", actions.grep_zettel, "Grep zettelkasten")
+map("n", "<leader>fG", actions.grep_vault, "Grep full vault")
+map("n", "<leader>fw", actions.search_word, "Search word in zettelkasten")
+map("n", "<leader>fh", actions.find_headings, "Find headings")
+map("n", "<leader>ww", actions.find_waypoints, "Find Waypoint indexes")
+map("n", "<leader>tv", actions.open_vault_tree, "Vault tree")
+map("n", "<leader>tz", actions.open_zettel_tree, "Zettelkasten tree")
+map("n", "<leader>tc", actions.reveal_current_note, "Reveal current note")
+
+map("n", "<leader>fb", "<cmd>ObsidianBacklinks<cr>", "Current note backlinks")
+map("n", "<leader>fl", "<cmd>ObsidianLinks<cr>", "Current note links")
+map("n", "<leader>fo", "<cmd>ObsidianQuickSwitch<cr>", "Obsidian quick switch")
+map("n", "<leader>fs", "<cmd>ObsidianSearch<cr>", "Obsidian search")
+map("n", "<leader>fn", "<cmd>ObsidianNew<cr>", "New note in inbox")
+
+map("n", "gd", "<cmd>ObsidianFollowLink<cr>", "Follow Obsidian link")
+map("n", "<leader>wp", actions.open_parent_waypoint, "Open parent Waypoint")
+map("n", "]w", actions.jump_to_next_wikilink, "Next wiki link")
+map("n", "[w", actions.jump_to_prev_wikilink, "Previous wiki link")
+
+map("n", "<leader>rr", actions.toggle_read_edit_mode, "Toggle read/edit mode")
+map("n", "<leader>re", actions.set_edit_mode, "Edit mode")
+map("n", "<leader>ro", actions.set_read_mode, "Read-only mode")
+
+map("n", "<leader>ov", actions.open_zettelkasten_dir, "Open zettelkasten directory")
+map("n", "<leader>oh", actions.open_home, "Open vault home")
+map("n", "<leader>h", actions.open_dashboard, "Home dashboard")
