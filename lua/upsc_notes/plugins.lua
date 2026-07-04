@@ -48,29 +48,23 @@ return {
         "  ╚██████╔╝██║     ███████║╚██████╗                   ",
         "   ╚═════╝ ╚═╝     ╚══════╝ ╚═════╝                   ",
         "                                                       ",
-        "          Zettelkasten  •  Waypoints  •  Vim          ",
+        "              Zettelkasten  •  In  •  Vim             ",
         "                                                       ",
       }
 
       dashboard.section.buttons.val = {
         dashboard.button("t", "  Zettelkasten tree", "<cmd>Ztree<CR>"),
-        dashboard.button("v", "󰉋  Vault tree", "<cmd>VaultTree<CR>"),
-        dashboard.button("w", "󰈙  Waypoint indexes", "<cmd>Waypoints<CR>"),
+        dashboard.button("i", "󰉋  In tree", "<cmd>InTree<CR>"),
         dashboard.button("z", "󰱼  Find zettelkasten note", "<cmd>Zettel<CR>"),
+        dashboard.button("n", "󰱼  Find in note", "<cmd>In<CR>"),
         dashboard.button("g", "  Search zettelkasten text", "<cmd>Zgrep<CR>"),
-        dashboard.button("s", "󰱼  Find in current scope", "<cmd>ScopeFiles<CR>"),
-        dashboard.button("/", "󰱽  Search current scope", "<cmd>ScopeGrep<CR>"),
-        dashboard.button("r", "󱋡  Recent vault notes", "<cmd>RecentNotes<CR>"),
-        dashboard.button("f", "󰉋  Focus tree on current scope", "<cmd>FocusTree<CR>"),
-        dashboard.button("u", "󰁌  Unfocus tree to zettelkasten", "<cmd>UnfocusTree<CR>"),
-        dashboard.button("p", "󰊄  Polity index", "<cmd>Polity<CR>"),
-        dashboard.button("e", "󰯂  Ethics index", "<cmd>Ethics<CR>"),
+        dashboard.button("/", "󰱽  Search in text", "<cmd>Ingrep<CR>"),
         dashboard.button("q", "󰅚  Quit", "<cmd>qa<CR>"),
       }
 
       dashboard.section.footer.val = {
         "",
-        "Space f z files   Space f g text   Space f / scope   Space rr read/edit",
+        "Space f z zettel   Space f i in   Space t z/t i tree   Space rr read/edit",
       }
 
       dashboard.section.header.opts.hl = "UpscDashboardHeader"
@@ -122,7 +116,6 @@ return {
       wk.add({
         { "<leader>f", group = "find/search" },
         { "<leader>t", group = "tree" },
-        { "<leader>w", group = "waypoint" },
         { "<leader>r", group = "read/edit" },
         { "<leader>o", group = "open" },
       })
@@ -374,7 +367,7 @@ return {
           path = paths.vault_root,
         },
       },
-      notes_subdir = "inbox",
+      notes_subdir = "in",
       new_notes_location = "notes_subdir",
       completion = {
         nvim_cmp = false,

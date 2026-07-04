@@ -153,20 +153,20 @@ local function grep(opts)
   })
 end
 
-function M.find_vault_file()
-  find_files({ cwd = paths.vault_root, title = "Vault files" })
-end
-
 function M.find_zettel_note()
   find_files({ cwd = paths.zettel_root, title = "Zettelkasten files" })
+end
+
+function M.find_in_note()
+  find_files({ cwd = paths.in_root, title = "In files" })
 end
 
 function M.grep_zettel()
   grep({ cwd = paths.zettel_root, title = "Grep zettelkasten" })
 end
 
-function M.grep_vault()
-  grep({ cwd = paths.vault_root, title = "Grep full vault" })
+function M.grep_in()
+  grep({ cwd = paths.in_root, title = "Grep in" })
 end
 
 function M.search_word()
@@ -188,26 +188,12 @@ function M.find_headings()
   grep({ cwd = paths.zettel_root, search = "^# ", title = "Headings" })
 end
 
-function M.find_waypoints()
-  grep({ cwd = paths.zettel_root, search = "%% Begin Waypoint %%", title = "Waypoint indexes" })
-end
-
 function M.find_scope_file()
   find_files({ cwd = current_scope_dir(), title = "Scope files" })
 end
 
 function M.grep_scope()
   grep({ cwd = current_scope_dir(), title = "Grep current scope" })
-end
-
-function M.recent_notes()
-  local picker = snacks_picker()
-  if picker then
-    picker.recent({ cwd = paths.vault_root, filter = { cwd = true } })
-    return
-  end
-
-  telescope().oldfiles({ cwd = paths.vault_root, prompt_title = "Recent vault files" })
 end
 
 function M.resume_picker()
@@ -226,6 +212,10 @@ end
 
 function M.open_zettel_tree()
   open_tree_at(paths.zettel_root)
+end
+
+function M.open_in_tree()
+  open_tree_at(paths.in_root)
 end
 
 function M.reveal_current_note()
@@ -255,36 +245,8 @@ function M.open_zettelkasten_dir()
   edit(paths.zettel_root)
 end
 
-function M.open_ethics()
-  edit(paths.ethics_index)
-end
-
-function M.open_polity()
-  edit(paths.polity_index)
-end
-
-function M.open_parent_waypoint()
-  local current = vim.api.nvim_buf_get_name(0)
-  if current == "" then
-    return
-  end
-
-  local dir = vim.fn.fnamemodify(current, ":h")
-  local parent_name = vim.fn.fnamemodify(dir, ":t")
-  local candidates = {
-    dir .. "/" .. parent_name .. ".md",
-    dir .. "/00_Index.md",
-    dir .. "/00_Overview.md",
-  }
-
-  for _, candidate in ipairs(candidates) do
-    if vim.fn.filereadable(candidate) == 1 then
-      edit(candidate)
-      return
-    end
-  end
-
-  vim.notify("No parent Waypoint note found in " .. dir, vim.log.levels.WARN)
+function M.open_in_dir()
+  edit(paths.in_root)
 end
 
 function M.jump_to_next_wikilink()
