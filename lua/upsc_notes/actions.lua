@@ -22,13 +22,29 @@ local function is_dir(path)
   return stat and stat.type == "directory"
 end
 
-local function open_tree_at(path)
+local function is_file(path)
+  local stat = vim.loop.fs_stat(path)
+  return stat and stat.type == "file"
+end
+
+local function in_vault(path)
+  return path ~= "" and path:find(paths.vault_root, 1, true) == 1
+end
+
+local function open_tree_at(path, reveal_file)
   if not is_dir(path) then
     vim.notify("Tree root does not exist: " .. path, vim.log.levels.WARN)
     return
   end
 
-  vim.cmd("Neotree filesystem reveal left dir=" .. vim.fn.fnameescape(path))
+  require("neo-tree.command").execute({
+    action = "focus",
+    source = "filesystem",
+    position = "left",
+    dir = path,
+    reveal_file = reveal_file,
+    reveal_force_cwd = reveal_file ~= nil,
+  })
 end
 
 local function picker_defaults(opts)
@@ -64,34 +80,39 @@ local function file_command()
   return "find"
 end
 
-local function current_scope_dir()
+local function active_note_path()
   local current = vim.api.nvim_buf_get_name(0)
+  if in_vault(current) and (is_file(current) or is_dir(current)) then
+    return current
+  end
+
+  for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+    local buf = vim.api.nvim_win_get_buf(win)
+    if vim.bo[buf].filetype ~= "neo-tree" then
+      local name = vim.api.nvim_buf_get_name(buf)
+      if in_vault(name) and (is_file(name) or is_dir(name)) then
+        return name
+      end
+    end
+  end
+
+  local alternate = vim.fn.bufname("#")
+  if in_vault(alternate) and (is_file(alternate) or is_dir(alternate)) then
+    return alternate
+  end
+
+  return ""
+end
+
+local function current_scope_dir()
+  local current = active_note_path()
   if current == "" then
     return paths.zettel_root
   end
-
-  local dir = vim.fn.fnamemodify(current, ":h")
-
-  if current:find(paths.inbox_root, 1, true) == 1 then
-    local relative = current:sub(#paths.inbox_root + 2)
-    local top = relative:match("^([^/]+)")
-    if top then
-      return paths.inbox_root .. "/" .. top
-    end
+  if is_dir(current) then
+    return current
   end
-
-  if current:find(paths.zettel_root, 1, true) == 1 then
-    local relative = current:sub(#paths.zettel_root + 2)
-    local subject = relative:match("^([^/]+)")
-    local chapter = relative:match("^[^/]+/([^/]+)")
-    if subject and chapter then
-      return paths.zettel_root .. "/" .. subject .. "/" .. chapter
-    elseif subject then
-      return paths.zettel_root .. "/" .. subject
-    end
-  end
-
-  return dir
+  return vim.fn.fnamemodify(current, ":h")
 end
 
 local function find_files(opts)
@@ -208,11 +229,22 @@ function M.open_zettel_tree()
 end
 
 function M.reveal_current_note()
-  vim.cmd("Neotree filesystem reveal left")
+  local current = active_note_path()
+  if current == "" then
+    M.open_zettel_tree()
+    return
+  end
+
+  local dir = is_dir(current) and current or vim.fn.fnamemodify(current, ":h")
+  local reveal_file = is_file(current) and current or nil
+  open_tree_at(dir, reveal_file)
 end
 
 function M.focus_tree()
-  open_tree_at(current_scope_dir())
+  local current = active_note_path()
+  local dir = current_scope_dir()
+  local reveal_file = is_file(current) and current or nil
+  open_tree_at(dir, reveal_file)
 end
 
 function M.unfocus_tree()
