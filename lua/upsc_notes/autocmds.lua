@@ -45,6 +45,30 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "neo-tree",
+  callback = function(event)
+    local maps = {
+      { "<leader>tz", actions.open_zettel_tree, "Zettelkasten tree" },
+      { "<leader>ti", actions.open_in_tree, "In tree" },
+      { "<leader>tt", actions.toggle_tree, "Toggle tree" },
+      { "<leader>te", actions.toggle_tree_focus, "Editor/tree focus" },
+      { "<leader>tc", actions.reveal_current_note, "Reveal current note" },
+      { "<leader>tf", actions.focus_tree, "Focus tree here" },
+      { "<leader>tu", actions.unfocus_tree, "Unfocus tree" },
+    }
+
+    for _, map in ipairs(maps) do
+      vim.keymap.set("n", map[1], map[2], {
+        buffer = event.buf,
+        silent = true,
+        noremap = true,
+        desc = map[3],
+      })
+    end
+  end,
+})
+
 vim.api.nvim_create_autocmd("VimEnter", {
   callback = function()
     if vim.fn.argc() == 0 and #vim.api.nvim_list_uis() > 0 then

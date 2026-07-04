@@ -115,6 +115,19 @@ local function current_scope_dir()
   return vim.fn.fnamemodify(current, ":h")
 end
 
+local function active_root_dir()
+  local current = active_note_path()
+  if current ~= "" and current:find(paths.in_root, 1, true) == 1 then
+    return paths.in_root
+  end
+  return paths.zettel_root
+end
+
+local function is_tree_window(win)
+  local buf = vim.api.nvim_win_get_buf(win)
+  return vim.bo[buf].filetype == "neo-tree"
+end
+
 local function find_files(opts)
   opts.hidden = true
   opts.ignored = false
@@ -238,7 +251,7 @@ function M.focus_tree()
 end
 
 function M.unfocus_tree()
-  M.open_zettel_tree()
+  open_tree_at(active_root_dir())
 end
 
 function M.open_zettelkasten_dir()
@@ -247,6 +260,34 @@ end
 
 function M.open_in_dir()
   edit(paths.in_root)
+end
+
+function M.toggle_tree()
+  local root = active_root_dir()
+  require("neo-tree.command").execute({
+    action = "focus",
+    source = "filesystem",
+    position = "left",
+    dir = root,
+    toggle = true,
+  })
+end
+
+function M.toggle_tree_focus()
+  local current_win = vim.api.nvim_get_current_win()
+  if is_tree_window(current_win) then
+    vim.cmd("wincmd p")
+    return
+  end
+
+  for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+    if is_tree_window(win) then
+      vim.api.nvim_set_current_win(win)
+      return
+    end
+  end
+
+  M.reveal_current_note()
 end
 
 function M.jump_to_next_wikilink()
