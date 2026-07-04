@@ -10,6 +10,20 @@ local function edit(path)
   vim.cmd("edit " .. vim.fn.fnameescape(path))
 end
 
+local function is_dir(path)
+  local stat = vim.loop.fs_stat(path)
+  return stat and stat.type == "directory"
+end
+
+local function open_tree_at(path)
+  if not is_dir(path) then
+    vim.notify("Tree root does not exist: " .. path, vim.log.levels.WARN)
+    return
+  end
+
+  vim.cmd("Neotree filesystem reveal left dir=" .. vim.fn.fnameescape(path))
+end
+
 function M.find_vault_file()
   telescope().find_files({ cwd = paths.vault_root, prompt_title = "Vault files" })
 end
@@ -39,15 +53,62 @@ function M.find_waypoints()
 end
 
 function M.open_vault_tree()
-  vim.cmd("Neotree filesystem reveal left dir=" .. vim.fn.fnameescape(paths.vault_root))
+  open_tree_at(paths.vault_root)
 end
 
 function M.open_zettel_tree()
-  vim.cmd("Neotree filesystem reveal left dir=" .. vim.fn.fnameescape(paths.zettel_root))
+  open_tree_at(paths.zettel_root)
+end
+
+function M.open_ajay_tree()
+  open_tree_at(paths.ajay_root)
+end
+
+function M.open_ajay_index()
+  edit(paths.ajay_index)
 end
 
 function M.reveal_current_note()
   vim.cmd("Neotree filesystem reveal left")
+end
+
+function M.focus_current_study_tree()
+  local current = vim.api.nvim_buf_get_name(0)
+  if current == "" then
+    M.open_zettel_tree()
+    return
+  end
+
+  local dir = vim.fn.fnamemodify(current, ":h")
+
+  if current:find(paths.ajay_root, 1, true) == 1 then
+    open_tree_at(paths.ajay_root)
+    return
+  end
+
+  if current:find(paths.inbox_root, 1, true) == 1 then
+    local relative = current:sub(#paths.inbox_root + 2)
+    local top = relative:match("^([^/]+)")
+    if top then
+      open_tree_at(paths.inbox_root .. "/" .. top)
+      return
+    end
+  end
+
+  if current:find(paths.zettel_root, 1, true) == 1 then
+    local relative = current:sub(#paths.zettel_root + 2)
+    local subject = relative:match("^([^/]+)")
+    local chapter = relative:match("^[^/]+/([^/]+)")
+    if subject and chapter then
+      open_tree_at(paths.zettel_root .. "/" .. subject .. "/" .. chapter)
+      return
+    elseif subject then
+      open_tree_at(paths.zettel_root .. "/" .. subject)
+      return
+    end
+  end
+
+  open_tree_at(dir)
 end
 
 function M.open_home()

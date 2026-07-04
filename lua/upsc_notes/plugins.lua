@@ -31,6 +31,7 @@ return {
         dashboard.button("w", "󰈙  Waypoint indexes", "<cmd>Waypoints<CR>"),
         dashboard.button("z", "󰱼  Find zettelkasten note", "<cmd>Zettel<CR>"),
         dashboard.button("g", "  Search zettelkasten text", "<cmd>Zgrep<CR>"),
+        dashboard.button("a", "󰙅  Ajay Governance notes", "<cmd>AjayTree<CR>"),
         dashboard.button("p", "󰊄  Polity index", "<cmd>Polity<CR>"),
         dashboard.button("e", "󰯂  Ethics index", "<cmd>Ethics<CR>"),
         dashboard.button("r", "  Home in read mode", "<cmd>HomeRead<CR>"),
