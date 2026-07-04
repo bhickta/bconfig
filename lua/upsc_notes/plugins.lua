@@ -5,6 +5,74 @@ return {
     "nvim-lua/plenary.nvim",
   },
   {
+    "goolord/alpha-nvim",
+    cmd = "Alpha",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    config = function()
+      local alpha = require("alpha")
+      local dashboard = require("alpha.themes.dashboard")
+
+      dashboard.section.header.val = {
+        "                                                       ",
+        "  ██╗   ██╗██████╗ ███████╗ ██████╗                   ",
+        "  ██║   ██║██╔══██╗██╔════╝██╔════╝                   ",
+        "  ██║   ██║██████╔╝███████╗██║                        ",
+        "  ██║   ██║██╔═══╝ ╚════██║██║                        ",
+        "  ╚██████╔╝██║     ███████║╚██████╗                   ",
+        "   ╚═════╝ ╚═╝     ╚══════╝ ╚═════╝                   ",
+        "                                                       ",
+        "          Zettelkasten  •  Waypoints  •  Vim          ",
+        "                                                       ",
+      }
+
+      dashboard.section.buttons.val = {
+        dashboard.button("h", "  Home note", "<cmd>Home<CR>"),
+        dashboard.button("t", "  Zettelkasten tree", "<cmd>Ztree<CR>"),
+        dashboard.button("w", "󰈙  Waypoint indexes", "<cmd>Waypoints<CR>"),
+        dashboard.button("z", "󰱼  Find zettelkasten note", "<cmd>Zettel<CR>"),
+        dashboard.button("g", "  Search zettelkasten text", "<cmd>Zgrep<CR>"),
+        dashboard.button("p", "󰊄  Polity index", "<cmd>Polity<CR>"),
+        dashboard.button("e", "󰯂  Ethics index", "<cmd>Ethics<CR>"),
+        dashboard.button("r", "  Home in read mode", "<cmd>HomeRead<CR>"),
+        dashboard.button("q", "󰅚  Quit", "<cmd>qa<CR>"),
+      }
+
+      dashboard.section.footer.val = {
+        "",
+        "Enter/gd follow links   Backspace jump back   Space rr read/edit   Space t z tree",
+      }
+
+      dashboard.section.header.opts.hl = "Title"
+      dashboard.section.buttons.opts.hl = "Keyword"
+      dashboard.section.footer.opts.hl = "Comment"
+      dashboard.opts.opts.noautocmd = true
+
+      alpha.setup(dashboard.opts)
+    end,
+  },
+  {
+    "folke/which-key.nvim",
+    event = "VeryLazy",
+    opts = {
+      preset = "modern",
+      delay = 250,
+      win = {
+        border = "rounded",
+      },
+    },
+    config = function(_, opts)
+      local wk = require("which-key")
+      wk.setup(opts)
+      wk.add({
+        { "<leader>f", group = "find/search" },
+        { "<leader>t", group = "tree" },
+        { "<leader>w", group = "waypoint" },
+        { "<leader>r", group = "read/edit" },
+        { "<leader>o", group = "open" },
+      })
+    end,
+  },
+  {
     "nvim-telescope/telescope.nvim",
     branch = "0.1.x",
     dependencies = { "nvim-lua/plenary.nvim" },

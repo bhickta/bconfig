@@ -3,6 +3,9 @@ local paths = require("upsc_notes.paths")
 
 vim.api.nvim_create_user_command("Dashboard", actions.open_dashboard, {})
 vim.api.nvim_create_user_command("Home", actions.open_home, {})
+vim.api.nvim_create_user_command("HomeRead", actions.open_home_read_only, {})
+vim.api.nvim_create_user_command("Ethics", actions.open_ethics, {})
+vim.api.nvim_create_user_command("Polity", actions.open_polity, {})
 
 vim.api.nvim_create_user_command("Vault", function()
   vim.cmd("cd " .. vim.fn.fnameescape(paths.vault_root))

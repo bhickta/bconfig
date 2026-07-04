@@ -10,11 +10,6 @@ local function edit(path)
   vim.cmd("edit " .. vim.fn.fnameescape(path))
 end
 
-local function center_line(text, width)
-  local padding = math.max(math.floor((width - #text) / 2), 0)
-  return string.rep(" ", padding) .. text
-end
-
 function M.find_vault_file()
   telescope().find_files({ cwd = paths.vault_root, prompt_title = "Vault files" })
 end
@@ -136,68 +131,7 @@ end
 
 function M.open_dashboard()
   vim.cmd("cd " .. vim.fn.fnameescape(paths.vault_root))
-
-  local buf = vim.api.nvim_create_buf(false, true)
-  local width = vim.o.columns
-  local lines = {
-    "",
-    " _   _ ____  ____   ____ ",
-    "| | | |  _ \\|  _ \\ / ___|",
-    "| | | | |_) | |_) | |    ",
-    "| |_| |  __/|  __/| |___ ",
-    " \\___/|_|   |_|    \\____|",
-    "",
-    "Obsidian vault, Vim keys, Waypoint reading",
-    "",
-    "h  Open vault Home.md",
-    "t  Open zettelkasten folder tree",
-    "w  Find Waypoint indexes",
-    "z  Find zettelkasten note",
-    "g  Search zettelkasten text",
-    "c  Reveal current note in tree",
-    "e  Ethics index",
-    "p  Polity index",
-    "m  Mapping shortcuts",
-    "r  Open Home.md in read mode",
-    "",
-    "Enter/gd follow links inside notes    Backspace jump back",
-    "Space rr toggles read/edit            Space oh returns Home.md",
-    "",
-    "q  Close dashboard",
-  }
-
-  for i, line in ipairs(lines) do
-    lines[i] = center_line(line, width)
-  end
-
-  vim.api.nvim_set_current_buf(buf)
-  vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
-  vim.bo[buf].filetype = "upsc_dashboard"
-  vim.bo[buf].buftype = "nofile"
-  vim.bo[buf].bufhidden = "wipe"
-  vim.bo[buf].swapfile = false
-  vim.bo[buf].modifiable = false
-  vim.wo.number = false
-  vim.wo.relativenumber = false
-  vim.wo.signcolumn = "no"
-  vim.wo.foldcolumn = "0"
-  vim.wo.cursorline = false
-
-  local function dash_map(lhs, rhs, desc)
-    vim.keymap.set("n", lhs, rhs, { buffer = buf, silent = true, noremap = true, desc = desc })
-  end
-
-  dash_map("h", M.open_home, "Open vault home")
-  dash_map("t", M.open_zettel_tree, "Open zettelkasten tree")
-  dash_map("w", M.find_waypoints, "Find Waypoint indexes")
-  dash_map("z", M.find_zettel_note, "Find zettelkasten note")
-  dash_map("g", M.grep_zettel, "Search zettelkasten")
-  dash_map("c", M.reveal_current_note, "Reveal current note")
-  dash_map("e", M.open_ethics, "Open Ethics")
-  dash_map("p", M.open_polity, "Open Polity")
-  dash_map("m", M.open_mapping_section, "Open Mapping section")
-  dash_map("r", M.open_home_read_only, "Open home read-only")
-  dash_map("q", "<cmd>bd<cr>", "Close dashboard")
+  vim.cmd("Alpha")
 end
 
 return M
