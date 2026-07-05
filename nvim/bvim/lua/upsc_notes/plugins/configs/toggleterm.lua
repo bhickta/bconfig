@@ -31,6 +31,14 @@ return {
       buffer = term.bufnr,
       desc = "Toggle terminal",
     })
+    vim.keymap.set({ "n", "t", "i" }, "<C-`>", toggle, {
+      buffer = term.bufnr,
+      desc = "Toggle terminal",
+    })
+    vim.keymap.set({ "n", "t", "i" }, "<C-Space>", toggle, {
+      buffer = term.bufnr,
+      desc = "Toggle terminal",
+    })
     vim.keymap.set({ "n", "t", "i" }, "<C-'>", toggle, {
       buffer = term.bufnr,
       desc = "Toggle terminal",
