@@ -9,6 +9,16 @@ local function is_real_file(buf)
   return name ~= "" and vim.bo[buf].buftype == ""
 end
 
+local function alpha_visible()
+  for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+    local buf = vim.api.nvim_win_get_buf(win)
+    if vim.bo[buf].filetype == "alpha" then
+      return true
+    end
+  end
+  return false
+end
+
 function M.setup()
   local group = vim.api.nvim_create_augroup("UpscNotesAutocmds", { clear = true })
 
@@ -117,6 +127,22 @@ function M.setup()
       end
       vim.wo.wrap = false
       vim.wo.linebreak = false
+    end,
+  })
+
+  vim.api.nvim_create_autocmd({ "WinResized", "WinNew", "WinClosed" }, {
+    group = group,
+    desc = "Redraw dashboard after layout changes",
+    callback = function()
+      if not alpha_visible() then
+        return
+      end
+
+      vim.schedule(function()
+        if alpha_visible() then
+          pcall(vim.cmd.AlphaRedraw)
+        end
+      end)
     end,
   })
 
