@@ -52,6 +52,41 @@ local function redraw_collapsed(state, focus_path)
   renderer.focus_node(state, focus_path or state.path)
 end
 
+local function collapse_filtered_tree(state)
+  if state.search_pattern and state.search_pattern ~= "" and state.tree then
+    redraw_collapsed(state, state.path)
+  end
+end
+
+local function toggle_filter(state)
+  local filesystem = require("neo-tree.sources.filesystem")
+  if state.search_pattern and state.search_pattern ~= "" then
+    state.upsc_saved_filter = state.search_pattern
+    filesystem.reset_search(state, true)
+    vim.notify("Tree filter off: " .. state.upsc_saved_filter, vim.log.levels.INFO)
+    return
+  end
+
+  if not state.upsc_saved_filter or state.upsc_saved_filter == "" then
+    vim.notify("No saved tree filter", vim.log.levels.WARN)
+    return
+  end
+
+  state.search_pattern = state.upsc_saved_filter
+  state.fuzzy_finder_mode = true
+  state.open_folders_before_search = nil
+  filesystem._navigate_internal(state, nil, nil, function()
+    collapse_filtered_tree(state)
+    vim.notify("Tree filter on: " .. state.search_pattern, vim.log.levels.INFO)
+  end, false)
+end
+
+local function clear_filter(state)
+  state.upsc_saved_filter = nil
+  require("neo-tree.sources.filesystem").reset_search(state, true)
+  vim.notify("Tree filter cleared", vim.log.levels.INFO)
+end
+
 local function focus_folder(state)
   local node = state.tree:get_node()
   local path = node.type == "directory" and node:get_id() or node:get_parent_id()
@@ -230,6 +265,8 @@ function M.opts()
       open_folder_files = open_folder_files,
       focus_folder = focus_folder,
       unfocus_folder = unfocus_folder,
+      toggle_filter = toggle_filter,
+      clear_filter = clear_filter,
     },
     filesystem = {
       bind_to_cwd = false,
@@ -258,6 +295,7 @@ function M.opts()
             },
           },
           ["<C-x>"] = { "clear_filter", desc = "Clear tree filter" },
+          tf = { "toggle_filter", desc = "Toggle tree filter" },
           ["."] = "focus_folder",
           [","] = "unfocus_folder",
           go = "open_folder_files",
@@ -306,6 +344,12 @@ function M.opts()
           vim.wo.wrap = true
           vim.wo.linebreak = true
           vim.wo.sidescrolloff = 0
+          local ok, state = pcall(require("neo-tree.sources.manager").get_state_for_window)
+          if ok and state then
+            vim.schedule(function()
+              collapse_filtered_tree(state)
+            end)
+          end
         end,
       },
     },
