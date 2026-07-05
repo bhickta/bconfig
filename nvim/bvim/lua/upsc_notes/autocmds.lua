@@ -114,6 +114,7 @@ function M.setup()
     callback = function()
       config.apply_markdown_buffer_options()
       vim.opt_local.formatoptions:remove({ "t", "c", "r", "o" })
+      actions.set_read_mode({ notify = false })
 
       vim.keymap.set("n", "<cr>", "<cmd>ObsidianFollowLink<cr>", {
         buffer = true,

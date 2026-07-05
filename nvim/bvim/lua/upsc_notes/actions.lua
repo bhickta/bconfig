@@ -374,20 +374,26 @@ local function set_markdown_reading_buffer(enabled)
   config.apply_markdown_reading_options(enabled)
 end
 
-function M.set_read_mode()
+function M.set_read_mode(opts)
+  opts = opts or {}
   vim.opt_local.readonly = true
   vim.opt_local.modifiable = false
   set_markdown_reading_buffer(true)
   set_reading_window(true)
-  vim.notify("Read mode: buffer locked", vim.log.levels.INFO)
+  if opts.notify ~= false then
+    vim.notify("Read mode: buffer locked", vim.log.levels.INFO)
+  end
 end
 
-function M.set_edit_mode()
+function M.set_edit_mode(opts)
+  opts = opts or {}
   vim.opt_local.modifiable = true
   vim.opt_local.readonly = false
   set_markdown_reading_buffer(false)
   set_reading_window(false)
-  vim.notify("Edit mode: buffer unlocked", vim.log.levels.INFO)
+  if opts.notify ~= false then
+    vim.notify("Edit mode: buffer unlocked", vim.log.levels.INFO)
+  end
 end
 
 function M.toggle_read_edit_mode()
