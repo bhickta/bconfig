@@ -46,6 +46,7 @@ function M.global(actions)
     map("n", "<leader>n", command("enew"), "New file"),
     map("n", "|", command("vsplit"), "Vertical split"),
     map("n", "\\", command("split"), "Horizontal split"),
+    map("n", "<leader>?", actions.find_keymaps, "Find keymaps"),
 
     map("n", "<C-h>", smart_split("move_cursor_left"), "Move to left split"),
     map("n", "<C-j>", smart_split("move_cursor_down"), "Move to below split"),
