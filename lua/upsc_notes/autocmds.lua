@@ -1,5 +1,6 @@
 local actions = require("upsc_notes.actions")
 local config = require("upsc_notes.config")
+local shortcuts = require("upsc_notes.shortcuts")
 
 local M = {}
 
@@ -146,24 +147,12 @@ function M.setup()
     group = group,
     pattern = "neo-tree",
     callback = function(event)
-      local maps = {
-        { "<leader>tz", actions.open_zettel_tree, "Zettelkasten tree" },
-        { "<leader>ti", actions.open_in_tree, "In tree" },
-        { "<leader>tt", actions.toggle_tree, "Toggle tree" },
-        { "<leader>te", actions.toggle_tree_focus, "Editor/tree focus" },
-        { "<leader>tc", actions.reveal_current_note, "Reveal current note" },
-        { "<leader>tf", actions.focus_tree, "Focus tree here" },
-        { "<leader>tu", actions.unfocus_tree, "Unfocus tree" },
-        { "<leader>e", actions.toggle_tree, "Toggle Explorer" },
-        { "<leader>o", actions.focus_tree_panel, "Toggle Explorer Focus" },
-      }
-
-      for _, map in ipairs(maps) do
-        vim.keymap.set("n", map[1], map[2], {
+      for _, shortcut in ipairs(shortcuts.tree_buffer(actions)) do
+        vim.keymap.set(shortcut.mode, shortcut.lhs, shortcut.rhs, {
           buffer = event.buf,
           silent = true,
           noremap = true,
-          desc = map[3],
+          desc = shortcut.desc,
         })
       end
     end,

@@ -1,5 +1,6 @@
 local config = require("upsc_notes.config")
 local paths = require("upsc_notes.paths")
+local shortcuts = require("upsc_notes.shortcuts")
 
 local icons = {
   dashboard = {
@@ -102,18 +103,15 @@ return {
       }
 
       dashboard.section.buttons.val = {
-        dashboard.button("t", icons.dashboard.zettel_tree .. "  Zettelkasten tree", "<cmd>Ztree<CR>"),
-        dashboard.button("i", icons.dashboard.in_tree .. "  In tree", "<cmd>InTree<CR>"),
-        dashboard.button("z", icons.dashboard.zettel_note .. "  Find zettelkasten note", "<cmd>Zettel<CR>"),
-        dashboard.button("n", icons.dashboard.in_note .. "  Find in note", "<cmd>In<CR>"),
-        dashboard.button("g", icons.dashboard.search .. "  Search zettelkasten text", "<cmd>Zgrep<CR>"),
-        dashboard.button("/", icons.dashboard.search .. "  Search in text", "<cmd>Ingrep<CR>"),
-        dashboard.button("q", icons.dashboard.quit .. "  Quit", "<cmd>qa<CR>"),
       }
+
+      for _, shortcut in ipairs(shortcuts.dashboard_buttons(icons)) do
+        table.insert(dashboard.section.buttons.val, dashboard.button(shortcut.key, shortcut.label, shortcut.command))
+      end
 
       dashboard.section.footer.val = {
         "",
-        "Space f z zettel   Space f i in   Space t z/t i tree   Space rr read/edit",
+        shortcuts.dashboard_footer(),
       }
 
       dashboard.section.header.opts.hl = "UpscDashboardHeader"
@@ -207,14 +205,7 @@ return {
     config = function(_, opts)
       local wk = require("which-key")
       wk.setup(opts)
-      wk.add({
-        { "<leader>f", group = "find/search" },
-        { "<leader>m", group = "markdown/notes" },
-        { "<leader>p", group = "plugins" },
-        { "<leader>t", group = "tree" },
-        { "<leader>r", group = "read/edit" },
-        { "<leader>u", group = "ui" },
-      })
+      wk.add(shortcuts.which_key_groups())
     end,
   },
   {

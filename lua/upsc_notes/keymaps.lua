@@ -1,4 +1,5 @@
 local actions = require("upsc_notes.actions")
+local shortcuts = require("upsc_notes.shortcuts")
 
 local M = {}
 
@@ -7,90 +8,9 @@ local function map(mode, lhs, rhs, desc)
 end
 
 function M.setup()
-  map("n", "<leader>w", "<cmd>w<cr>", "Save")
-  map("n", "<leader>q", "<cmd>confirm q<cr>", "Quit window")
-  map("n", "<leader>Q", "<cmd>confirm qall<cr>", "Quit Neovim")
-  map("n", "<leader>n", "<cmd>enew<cr>", "New file")
-  map("n", "|", "<cmd>vsplit<cr>", "Vertical split")
-  map("n", "\\", "<cmd>split<cr>", "Horizontal split")
-
-  map("n", "<C-h>", function()
-    require("smart-splits").move_cursor_left()
-  end, "Move to left split")
-  map("n", "<C-j>", function()
-    require("smart-splits").move_cursor_down()
-  end, "Move to below split")
-  map("n", "<C-k>", function()
-    require("smart-splits").move_cursor_up()
-  end, "Move to above split")
-  map("n", "<C-l>", function()
-    require("smart-splits").move_cursor_right()
-  end, "Move to right split")
-  map("n", "<C-Up>", function()
-    require("smart-splits").resize_up()
-  end, "Resize split up")
-  map("n", "<C-Down>", function()
-    require("smart-splits").resize_down()
-  end, "Resize split down")
-  map("n", "<C-Left>", function()
-    require("smart-splits").resize_left()
-  end, "Resize split left")
-  map("n", "<C-Right>", function()
-    require("smart-splits").resize_right()
-  end, "Resize split right")
-
-  map("v", "<S-Tab>", "<gv", "Unindent line")
-  map("v", "<Tab>", ">gv", "Indent line")
-
-  map("n", "<leader>fz", actions.find_zettel_note, "Find zettelkasten note")
-  map("n", "<leader>fi", actions.find_in_note, "Find in note")
-  map("n", "<leader>fg", actions.grep_zettel, "Grep zettelkasten")
-  map("n", "<leader>fI", actions.grep_in, "Grep in")
-  map("n", "<leader>f/", actions.grep_scope, "Grep current scope")
-  map("n", "<leader>fS", actions.find_scope_file, "Find file in current scope")
-  map("n", "<leader>fR", actions.resume_picker, "Resume last picker")
-  map("n", "<leader>fw", actions.search_word, "Search word in zettelkasten")
-  map("n", "<leader>f'", actions.find_marks, "Find marks")
-  map("n", "<leader>fb", actions.find_buffers, "Find buffers")
-  map("n", "<leader>fC", actions.find_commands, "Find commands")
-  map("n", "<leader>fk", actions.find_keymaps, "Find keymaps")
-  map("n", "<leader>fu", actions.find_undo, "Find undo history")
-  map("n", "<leader>tz", actions.open_zettel_tree, "Zettelkasten tree")
-  map("n", "<leader>ti", actions.open_in_tree, "In tree")
-  map("n", "<leader>tt", actions.toggle_tree, "Toggle tree")
-  map("n", "<leader>te", actions.toggle_tree_focus, "Editor/tree focus")
-  map("n", "<leader>tc", actions.reveal_current_note, "Reveal current note")
-  map("n", "<leader>tf", actions.focus_tree, "Focus tree here")
-  map("n", "<leader>tu", actions.unfocus_tree, "Unfocus tree")
-  map("n", "<leader>e", actions.toggle_tree, "Toggle Explorer")
-  map("n", "<leader>o", actions.focus_tree_panel, "Toggle Explorer Focus")
-
-  map("n", "<leader>mb", "<cmd>ObsidianBacklinks<cr>", "Current note backlinks")
-  map("n", "<leader>ml", "<cmd>ObsidianLinks<cr>", "Current note links")
-  map("n", "<leader>mo", "<cmd>ObsidianQuickSwitch<cr>", "Obsidian quick switch")
-  map("n", "<leader>ms", "<cmd>ObsidianSearch<cr>", "Obsidian search")
-  map("n", "<leader>mn", "<cmd>ObsidianNew<cr>", "New note in in")
-
-  map("n", "gd", "<cmd>ObsidianFollowLink<cr>", "Follow Obsidian link")
-  map("n", "]w", actions.jump_to_next_wikilink, "Next wiki link")
-  map("n", "[w", actions.jump_to_prev_wikilink, "Previous wiki link")
-
-  map("n", "<leader>rr", actions.toggle_read_edit_mode, "Toggle read/edit mode")
-  map("n", "<leader>re", actions.set_edit_mode, "Edit mode")
-  map("n", "<leader>ro", actions.set_read_mode, "Read-only mode")
-  map("n", "<leader>rs", actions.toggle_study_mode, "Toggle study mode")
-  map("n", "<leader>rm", actions.toggle_markdown_render, "Toggle markdown render")
-
-  map("n", "<leader>pi", "<cmd>Lazy install<cr>", "Plugins install")
-  map("n", "<leader>ps", "<cmd>Lazy home<cr>", "Plugins status")
-  map("n", "<leader>pS", "<cmd>Lazy sync<cr>", "Plugins sync")
-  map("n", "<leader>pu", "<cmd>Lazy check<cr>", "Plugins check updates")
-  map("n", "<leader>pU", "<cmd>Lazy update<cr>", "Plugins update")
-
-  map("n", "<leader>uD", actions.dismiss_notifications, "Dismiss notifications")
-  map("n", "<leader>uZ", actions.toggle_zen, "Toggle zen mode")
-
-  map("n", "<leader>h", actions.open_dashboard, "Home dashboard")
+  for _, shortcut in ipairs(shortcuts.global(actions)) do
+    map(shortcut.mode, shortcut.lhs, shortcut.rhs, shortcut.desc)
+  end
 end
 
 return M
