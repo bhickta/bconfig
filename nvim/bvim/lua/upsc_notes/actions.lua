@@ -205,6 +205,27 @@ function M.find_scope_file()
   find_files({ cwd = current_scope_dir(), title = "Scope files" })
 end
 
+function M.find_recent_files()
+  local picker = snacks_picker()
+  if picker then
+    picker.recent({ title = "Recent files" })
+    return
+  end
+
+  telescope().oldfiles({ prompt_title = "Recent files" })
+end
+
+function M.find_recent_scope_files()
+  local cwd = current_scope_dir()
+  local picker = snacks_picker()
+  if picker then
+    picker.recent(picker_defaults({ title = "Recent files in current scope", filter = { cwd = cwd } }))
+    return
+  end
+
+  telescope().oldfiles({ cwd = cwd, prompt_title = "Recent files in current scope" })
+end
+
 function M.grep_scope()
   grep({ cwd = current_scope_dir(), title = "Grep current scope" })
 end

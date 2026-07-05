@@ -144,6 +144,12 @@ function M.opts()
       group_empty_dirs = false,
       hijack_netrw_behavior = "open_current",
       use_libuv_file_watcher = vim.fn.has("win32") ~= 1,
+      window = {
+        mappings = {
+          ["."] = "set_root",
+          [","] = "navigate_up",
+        },
+      },
     },
     window = {
       width = 30,

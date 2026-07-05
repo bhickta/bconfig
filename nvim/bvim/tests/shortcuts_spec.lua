@@ -35,6 +35,7 @@ assert_unique(shortcuts.dashboard_buttons({
     in_tree = "I",
     zettel_note = "Z",
     in_note = "N",
+    recent = "O",
     search = "S",
     quit = "Q",
   },

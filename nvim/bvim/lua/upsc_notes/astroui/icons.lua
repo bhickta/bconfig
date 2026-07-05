@@ -4,6 +4,7 @@ return {
     in_tree = "□",
     zettel_note = "◇",
     in_note = "◆",
+    recent = "◷",
     search = "⌕",
     quit = "×",
   },

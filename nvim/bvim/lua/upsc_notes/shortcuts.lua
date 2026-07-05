@@ -82,6 +82,8 @@ function M.global(actions)
     map("n", "<leader>fI", actions.grep_in, "Grep in"),
     map("n", "<leader>f/", actions.grep_scope, "Grep current scope"),
     map("n", "<leader>fS", actions.find_scope_file, "Find file in current scope"),
+    map("n", "<leader>fo", actions.find_recent_files, "Find old files"),
+    map("n", "<leader>fO", actions.find_recent_scope_files, "Find old files in current scope"),
     map("n", "<leader>fR", actions.resume_picker, "Resume last picker"),
     map("n", "<leader>fw", actions.search_word, "Search word in zettelkasten"),
     map("n", "<leader>f'", actions.find_marks, "Find marks"),
@@ -159,6 +161,7 @@ function M.dashboard_buttons(icons)
     { key = "i", label = dashboard_icons.in_tree .. "  In tree", command = "<cmd>InTree<CR>" },
     { key = "z", label = dashboard_icons.zettel_note .. "  Find zettelkasten note", command = "<cmd>Zettel<CR>" },
     { key = "n", label = dashboard_icons.in_note .. "  Find in note", command = "<cmd>In<CR>" },
+    { key = "o", label = dashboard_icons.recent .. "  Recent files", command = "<cmd>lua require('upsc_notes.actions').find_recent_files()<CR>" },
     { key = "g", label = dashboard_icons.search .. "  Search zettelkasten text", command = "<cmd>Zgrep<CR>" },
     { key = "/", label = dashboard_icons.search .. "  Search in text", command = "<cmd>Ingrep<CR>" },
     { key = "q", label = dashboard_icons.quit .. "  Quit", command = "<cmd>qa<CR>" },
@@ -166,7 +169,7 @@ function M.dashboard_buttons(icons)
 end
 
 function M.dashboard_footer()
-  return "Space f z zettel   Space f i in   Space t z/t i tree   Space rr read/edit"
+  return "Space f z zettel   Space f i in   Space f o recents   Space rr read/edit"
 end
 
 return M
