@@ -1,0 +1,17 @@
+return {
+  bg = "#11111b",
+  bg_alt = "#181825",
+  bg_float = "#1e1e2e",
+  bg_line = "#313244",
+  fg = "#cdd6f4",
+  muted = "#6c7086",
+  subtle = "#9399b2",
+  border = "#45475a",
+  blue = "#89b4fa",
+  cyan = "#89dceb",
+  green = "#a6e3a1",
+  mauve = "#cba6f7",
+  peach = "#fab387",
+  red = "#f38ba8",
+  yellow = "#f9e2af",
+}
