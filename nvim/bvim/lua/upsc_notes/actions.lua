@@ -374,6 +374,15 @@ local function set_markdown_reading_buffer(enabled)
   config.apply_markdown_reading_options(enabled)
 end
 
+function M.apply_current_window_mode()
+  if vim.bo.filetype ~= "markdown" then
+    return
+  end
+
+  set_markdown_reading_buffer(not vim.bo.modifiable or vim.b.upsc_study_mode == true)
+  set_reading_window(not vim.bo.modifiable or vim.b.upsc_study_mode == true)
+end
+
 function M.set_read_mode(opts)
   opts = opts or {}
   vim.opt_local.readonly = false

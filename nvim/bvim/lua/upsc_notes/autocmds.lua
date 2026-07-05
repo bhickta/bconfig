@@ -144,6 +144,14 @@ function M.setup()
     end,
   })
 
+  vim.api.nvim_create_autocmd({ "BufEnter", "WinEnter" }, {
+    group = group,
+    desc = "Restore markdown read/edit window mode",
+    callback = function()
+      actions.apply_current_window_mode()
+    end,
+  })
+
   vim.api.nvim_create_autocmd("FileType", {
     group = group,
     pattern = "neo-tree",
