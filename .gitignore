@@ -2,5 +2,5 @@
 *.swp
 *.swo
 Session.vim
-nvim-inspiration/
+inspiration/
 .tokensave
