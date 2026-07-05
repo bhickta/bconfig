@@ -249,9 +249,30 @@ function M.opts()
       use_libuv_file_watcher = vim.fn.has("win32") ~= 1,
       window = {
         mappings = {
+          ["/"] = {
+            "fuzzy_finder",
+            desc = "Filter tree",
+            config = {
+              keep_filter_on_submit = true,
+              title = "Filter tree (persistent, <C-x> clears)",
+            },
+          },
+          ["<C-x>"] = { "clear_filter", desc = "Clear tree filter" },
           ["."] = "focus_folder",
           [","] = "unfocus_folder",
           go = "open_folder_files",
+        },
+        fuzzy_finder_mappings = {
+          ["<CR>"] = "close_keep_filter",
+          ["<Esc>"] = "close_keep_filter",
+          ["<C-x>"] = "close_clear_filter",
+          {
+            n = {
+              ["<CR>"] = "close_keep_filter",
+              ["<Esc>"] = "close_keep_filter",
+              ["<C-x>"] = "close_clear_filter",
+            },
+          },
         },
       },
     },

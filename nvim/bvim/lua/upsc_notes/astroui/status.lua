@@ -9,6 +9,27 @@ local function is_real_file(buf)
   return vim.bo[buf].buftype == "" and vim.api.nvim_buf_get_name(buf) ~= ""
 end
 
+local function status_win()
+  return tonumber(vim.g.statusline_winid) or vim.api.nvim_get_current_win()
+end
+
+local function tree_filter()
+  local win = status_win()
+  if not vim.api.nvim_win_is_valid(win) then
+    return nil
+  end
+
+  local buf = vim.api.nvim_win_get_buf(win)
+  if vim.bo[buf].filetype ~= "neo-tree" then
+    return nil
+  end
+
+  local ok, state = pcall(require("neo-tree.sources.manager").get_state_for_window, win)
+  if ok and state and state.search_pattern and state.search_pattern ~= "" then
+    return state.search_pattern
+  end
+end
+
 local mode = {
   provider = function()
     return " " .. vim.api.nvim_get_mode().mode:upper() .. " "
@@ -36,6 +57,17 @@ local modified = {
   condition = function() return vim.bo.modified end,
   provider = " +",
   hl = { fg = colors.yellow, bg = colors.bg_alt },
+}
+
+local tree_filter_status = {
+  condition = function()
+    return tree_filter() ~= nil
+  end,
+  provider = function()
+    return " filter:" .. tree_filter() .. " "
+  end,
+  hl = { fg = colors.yellow, bg = colors.bg_alt, bold = true },
+  update = { "User", pattern = "NeoTreeFilterChanged" },
 }
 
 local git_branch = {
@@ -165,6 +197,7 @@ function M.setup()
       space,
       file,
       modified,
+      tree_filter_status,
       diagnostics,
       align,
       filetype,
