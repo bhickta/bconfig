@@ -1,6 +1,54 @@
 local config = require("upsc_notes.config")
 local paths = require("upsc_notes.paths")
 
+local icons = {
+  dashboard = {
+    zettel_tree = "▣",
+    in_tree = "□",
+    zettel_note = "◇",
+    in_note = "◆",
+    search = "⌕",
+    quit = "×",
+  },
+  markdown = {
+    headings = { "# ", "## ", "### ", "#### ", "##### ", "###### " },
+    unchecked = "☐ ",
+    checked = "☑ ",
+    note = "i",
+    tip = "✓",
+    important = "!",
+    warning = "!",
+    caution = "×",
+    image = "img ",
+    email = "@ ",
+    hyperlink = "↗ ",
+    wiki = "[[",
+  },
+  tree = {
+    file = "File",
+    buffers = "Bufs",
+    git = "Git",
+    collapsed = "▸",
+    expanded = "▾",
+    folder_closed = "▣",
+    folder_open = "▾",
+    folder_empty = "□",
+    file_default = "•",
+    modified = "●",
+  },
+  git = {
+    added = "+",
+    deleted = "-",
+    modified = "~",
+    renamed = "→",
+    untracked = "?",
+    ignored = "·",
+    unstaged = "!",
+    staged = "✓",
+    conflict = "×",
+  },
+}
+
 return {
   {
     "nvim-lua/plenary.nvim",
@@ -41,26 +89,26 @@ return {
       local dashboard = require("alpha.themes.dashboard")
 
       dashboard.section.header.val = {
-        "                                                       ",
-        "  ██╗   ██╗██████╗ ███████╗ ██████╗                   ",
-        "  ██║   ██║██╔══██╗██╔════╝██╔════╝                   ",
-        "  ██║   ██║██████╔╝███████╗██║                        ",
-        "  ██║   ██║██╔═══╝ ╚════██║██║                        ",
-        "  ╚██████╔╝██║     ███████║╚██████╗                   ",
-        "   ╚═════╝ ╚═╝     ╚══════╝ ╚═════╝                   ",
-        "                                                       ",
-        "              Zettelkasten  •  In  •  Vim             ",
-        "                                                       ",
+        "",
+        "██╗   ██╗██████╗ ███████╗ ██████╗",
+        "██║   ██║██╔══██╗██╔════╝██╔════╝",
+        "██║   ██║██████╔╝███████╗██║     ",
+        "██║   ██║██╔═══╝ ╚════██║██║     ",
+        "╚██████╔╝██║     ███████║╚██████╗",
+        " ╚═════╝ ╚═╝     ╚══════╝ ╚═════╝",
+        "",
+        "Zettelkasten  •  In  •  Vim",
+        "",
       }
 
       dashboard.section.buttons.val = {
-        dashboard.button("t", "  Zettelkasten tree", "<cmd>Ztree<CR>"),
-        dashboard.button("i", "󰉋  In tree", "<cmd>InTree<CR>"),
-        dashboard.button("z", "󰱼  Find zettelkasten note", "<cmd>Zettel<CR>"),
-        dashboard.button("n", "󰱼  Find in note", "<cmd>In<CR>"),
-        dashboard.button("g", "  Search zettelkasten text", "<cmd>Zgrep<CR>"),
-        dashboard.button("/", "󰱽  Search in text", "<cmd>Ingrep<CR>"),
-        dashboard.button("q", "󰅚  Quit", "<cmd>qa<CR>"),
+        dashboard.button("t", icons.dashboard.zettel_tree .. "  Zettelkasten tree", "<cmd>Ztree<CR>"),
+        dashboard.button("i", icons.dashboard.in_tree .. "  In tree", "<cmd>InTree<CR>"),
+        dashboard.button("z", icons.dashboard.zettel_note .. "  Find zettelkasten note", "<cmd>Zettel<CR>"),
+        dashboard.button("n", icons.dashboard.in_note .. "  Find in note", "<cmd>In<CR>"),
+        dashboard.button("g", icons.dashboard.search .. "  Search zettelkasten text", "<cmd>Zgrep<CR>"),
+        dashboard.button("/", icons.dashboard.search .. "  Search in text", "<cmd>Ingrep<CR>"),
+        dashboard.button("q", icons.dashboard.quit .. "  Quit", "<cmd>qa<CR>"),
       }
 
       dashboard.section.footer.val = {
@@ -69,8 +117,11 @@ return {
       }
 
       dashboard.section.header.opts.hl = "UpscDashboardHeader"
+      dashboard.section.header.opts.position = "center"
       dashboard.section.buttons.opts.hl = "UpscDashboardButton"
+      dashboard.section.buttons.opts.position = "center"
       dashboard.section.footer.opts.hl = "UpscDashboardFooter"
+      dashboard.section.footer.opts.position = "center"
       dashboard.opts.opts.noautocmd = true
 
       alpha.setup(dashboard.opts)
@@ -254,7 +305,7 @@ return {
         sign = false,
         width = "full",
         right_pad = 1,
-        icons = { "󰲡 ", "󰲣 ", "󰲥 ", "󰲧 ", "󰲩 ", "󰲫 " },
+        icons = icons.markdown.headings,
         backgrounds = {
           "RenderMarkdownH1Bg",
           "RenderMarkdownH2Bg",
@@ -290,10 +341,10 @@ return {
       checkbox = {
         enabled = true,
         unchecked = {
-          icon = "󰄱 ",
+          icon = icons.markdown.unchecked,
         },
         checked = {
-          icon = "󰱒 ",
+          icon = icons.markdown.checked,
         },
       },
       quote = {
@@ -305,19 +356,19 @@ return {
         preset = "round",
       },
       callout = {
-        note = { raw = "[!NOTE]", rendered = "󰋽 Note", highlight = "RenderMarkdownInfo" },
-        tip = { raw = "[!TIP]", rendered = "󰌶 Tip", highlight = "RenderMarkdownSuccess" },
-        important = { raw = "[!IMPORTANT]", rendered = "󰅾 Important", highlight = "RenderMarkdownHint" },
-        warning = { raw = "[!WARNING]", rendered = "󰀪 Warning", highlight = "RenderMarkdownWarn" },
-        caution = { raw = "[!CAUTION]", rendered = "󰳦 Caution", highlight = "RenderMarkdownError" },
+        note = { raw = "[!NOTE]", rendered = icons.markdown.note .. " Note", highlight = "RenderMarkdownInfo" },
+        tip = { raw = "[!TIP]", rendered = icons.markdown.tip .. " Tip", highlight = "RenderMarkdownSuccess" },
+        important = { raw = "[!IMPORTANT]", rendered = icons.markdown.important .. " Important", highlight = "RenderMarkdownHint" },
+        warning = { raw = "[!WARNING]", rendered = icons.markdown.warning .. " Warning", highlight = "RenderMarkdownWarn" },
+        caution = { raw = "[!CAUTION]", rendered = icons.markdown.caution .. " Caution", highlight = "RenderMarkdownError" },
       },
       link = {
         enabled = true,
-        image = "󰥶 ",
-        email = "󰀓 ",
-        hyperlink = "󰌹 ",
+        image = icons.markdown.image,
+        email = icons.markdown.email,
+        hyperlink = icons.markdown.hyperlink,
         wiki = {
-          icon = "󰖟 ",
+          icon = icons.markdown.wiki,
         },
       },
       win_options = {
@@ -344,12 +395,12 @@ return {
     opts = function()
       local git_available = vim.fn.executable("git") == 1
       local sources = {
-        { source = "filesystem", display_name = "󰉋 File" },
-        { source = "buffers", display_name = "󰈙 Bufs" },
+        { source = "filesystem", display_name = icons.tree.file },
+        { source = "buffers", display_name = icons.tree.buffers },
       }
 
       if git_available then
-        table.insert(sources, 3, { source = "git_status", display_name = "󰊢 Git" })
+        table.insert(sources, 3, { source = "git_status", display_name = icons.tree.git })
       end
 
       return {
@@ -366,30 +417,30 @@ return {
         default_component_configs = {
           indent = {
             padding = 0,
-            expander_collapsed = "",
-            expander_expanded = "",
+            expander_collapsed = icons.tree.collapsed,
+            expander_expanded = icons.tree.expanded,
           },
           icon = {
-            folder_closed = "",
-            folder_open = "",
-            folder_empty = "󰜌",
-            folder_empty_open = "󰜌",
-            default = "󰈙",
+            folder_closed = icons.tree.folder_closed,
+            folder_open = icons.tree.folder_open,
+            folder_empty = icons.tree.folder_empty,
+            folder_empty_open = icons.tree.folder_empty,
+            default = icons.tree.file_default,
           },
           modified = {
-            symbol = "●",
+            symbol = icons.tree.modified,
           },
           git_status = {
             symbols = {
-              added = "",
-              deleted = "",
-              modified = "",
-              renamed = "➜",
-              untracked = "★",
-              ignored = "◌",
-              unstaged = "✗",
-              staged = "✓",
-              conflict = "",
+              added = icons.git.added,
+              deleted = icons.git.deleted,
+              modified = icons.git.modified,
+              renamed = icons.git.renamed,
+              untracked = icons.git.untracked,
+              ignored = icons.git.ignored,
+              unstaged = icons.git.unstaged,
+              staged = icons.git.staged,
+              conflict = icons.git.conflict,
             },
           },
         },
