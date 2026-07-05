@@ -6,6 +6,13 @@ local function smart_split(method)
   end
 end
 
+local function terminal_smart_split(method)
+  return function()
+    vim.cmd.stopinsert()
+    require("smart-splits")[method]()
+  end
+end
+
 local function map(mode, lhs, rhs, desc, opts)
   return vim.tbl_extend("force", {
     mode = mode,
@@ -44,6 +51,10 @@ function M.global(actions)
     map("n", "<C-j>", smart_split("move_cursor_down"), "Move to below split"),
     map("n", "<C-k>", smart_split("move_cursor_up"), "Move to above split"),
     map("n", "<C-l>", smart_split("move_cursor_right"), "Move to right split"),
+    map("t", "<C-h>", terminal_smart_split("move_cursor_left"), "Move to left split"),
+    map("t", "<C-j>", terminal_smart_split("move_cursor_down"), "Move to below split"),
+    map("t", "<C-k>", terminal_smart_split("move_cursor_up"), "Move to above split"),
+    map("t", "<C-l>", terminal_smart_split("move_cursor_right"), "Move to right split"),
     map("n", "<C-Up>", smart_split("resize_up"), "Resize split up"),
     map("n", "<C-Down>", smart_split("resize_down"), "Resize split down"),
     map("n", "<C-Left>", smart_split("resize_left"), "Resize split left"),
