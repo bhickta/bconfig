@@ -40,7 +40,7 @@ local modified = {
 
 local readonly = {
   condition = function()
-    return is_real_file(0) and (vim.bo.readonly or not vim.bo.modifiable)
+    return is_real_file(0) and vim.bo.readonly
   end,
   provider = " ro",
   hl = { fg = colors.red, bg = colors.bg_alt },

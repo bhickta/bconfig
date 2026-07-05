@@ -376,7 +376,7 @@ end
 
 function M.set_read_mode(opts)
   opts = opts or {}
-  vim.opt_local.readonly = true
+  vim.opt_local.readonly = false
   vim.opt_local.modifiable = false
   set_markdown_reading_buffer(true)
   set_reading_window(true)
