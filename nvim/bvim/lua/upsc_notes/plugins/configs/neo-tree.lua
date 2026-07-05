@@ -43,6 +43,53 @@ local function toggleterm_in_direction(state, direction)
   require("toggleterm.terminal").Terminal:new({ dir = path, direction = direction }):toggle()
 end
 
+local function redraw_collapsed(state, focus_path)
+  local renderer = require("neo-tree.ui.renderer")
+  state.explicitly_opened_nodes = {}
+  state.force_open_folders = nil
+  renderer.collapse_all_nodes(state.tree)
+  renderer.redraw(state)
+  renderer.focus_node(state, focus_path or state.path)
+end
+
+local function focus_folder(state)
+  local node = state.tree:get_node()
+  local path = node.type == "directory" and node:get_id() or node:get_parent_id()
+  if not path or path == state.path then
+    redraw_collapsed(state, path)
+    return
+  end
+
+  local filesystem = require("neo-tree.sources.filesystem")
+  if state.search_pattern then
+    filesystem.reset_search(state, false)
+  end
+  state.explicitly_opened_nodes = {}
+  state.force_open_folders = nil
+  filesystem._navigate_internal(state, path, nil, function()
+    redraw_collapsed(state, path)
+  end, false)
+end
+
+local function unfocus_folder(state)
+  local parent_path = require("neo-tree.utils").split_path(state.path)
+  if not parent_path or parent_path == state.path then
+    redraw_collapsed(state, state.path)
+    return
+  end
+
+  local filesystem = require("neo-tree.sources.filesystem")
+  if state.search_pattern then
+    filesystem.reset_search(state, false)
+  end
+
+  state.explicitly_opened_nodes = {}
+  state.force_open_folders = nil
+  filesystem._navigate_internal(state, parent_path, nil, function()
+    redraw_collapsed(state, parent_path)
+  end, false)
+end
+
 local function open_folder_files(state)
   local node = state.tree:get_node()
   local dir = node.type == "directory" and node:get_id() or node:get_parent_id()
@@ -181,27 +228,8 @@ function M.opts()
         toggleterm_in_direction(state, "vertical")
       end,
       open_folder_files = open_folder_files,
-      navigate_up_collapsed = function(state)
-        local parent_path = require("neo-tree.utils").split_path(state.path)
-        if not parent_path or parent_path == state.path then
-          return
-        end
-
-        local filesystem = require("neo-tree.sources.filesystem")
-        if state.search_pattern then
-          filesystem.reset_search(state, false)
-        end
-
-        state.explicitly_opened_nodes = {}
-        state.force_open_folders = nil
-        filesystem._navigate_internal(state, parent_path, nil, function()
-          local renderer = require("neo-tree.ui.renderer")
-          state.explicitly_opened_nodes = {}
-          state.force_open_folders = nil
-          renderer.collapse_all_nodes(state.tree)
-          renderer.redraw(state)
-        end, false)
-      end,
+      focus_folder = focus_folder,
+      unfocus_folder = unfocus_folder,
     },
     filesystem = {
       bind_to_cwd = false,
@@ -221,8 +249,8 @@ function M.opts()
       use_libuv_file_watcher = vim.fn.has("win32") ~= 1,
       window = {
         mappings = {
-          ["."] = "set_root",
-          [","] = "navigate_up_collapsed",
+          ["."] = "focus_folder",
+          [","] = "unfocus_folder",
           go = "open_folder_files",
         },
       },
@@ -254,9 +282,9 @@ function M.opts()
         handler = function()
           vim.opt_local.signcolumn = "auto"
           vim.opt_local.foldcolumn = "0"
-          vim.opt_local.wrap = true
-          vim.opt_local.linebreak = true
-          vim.opt_local.sidescrolloff = 0
+          vim.wo.wrap = true
+          vim.wo.linebreak = true
+          vim.wo.sidescrolloff = 0
         end,
       },
     },

@@ -108,6 +108,18 @@ function M.setup()
     end,
   })
 
+  vim.api.nvim_create_autocmd({ "FileType", "BufWinEnter", "WinEnter" }, {
+    group = group,
+    desc = "Keep dashboard layout stable",
+    callback = function()
+      if vim.bo.filetype ~= "alpha" then
+        return
+      end
+      vim.wo.wrap = false
+      vim.wo.linebreak = false
+    end,
+  })
+
   vim.api.nvim_create_autocmd("FileType", {
     group = group,
     pattern = "markdown",
@@ -156,6 +168,10 @@ function M.setup()
     group = group,
     pattern = "neo-tree",
     callback = function(event)
+      vim.wo.wrap = true
+      vim.wo.linebreak = true
+      vim.wo.sidescrolloff = 0
+
       for _, shortcut in ipairs(shortcuts.tree_buffer(actions)) do
         vim.keymap.set(shortcut.mode, shortcut.lhs, shortcut.rhs, {
           buffer = event.buf,
