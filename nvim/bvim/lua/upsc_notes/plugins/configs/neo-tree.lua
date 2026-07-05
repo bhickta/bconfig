@@ -127,6 +127,27 @@ function M.opts()
       toggleterm_vertical = function(state)
         toggleterm_in_direction(state, "vertical")
       end,
+      navigate_up_collapsed = function(state)
+        local parent_path = require("neo-tree.utils").split_path(state.path)
+        if not parent_path or parent_path == state.path then
+          return
+        end
+
+        local filesystem = require("neo-tree.sources.filesystem")
+        if state.search_pattern then
+          filesystem.reset_search(state, false)
+        end
+
+        state.explicitly_opened_nodes = {}
+        state.force_open_folders = nil
+        filesystem._navigate_internal(state, parent_path, nil, function()
+          local renderer = require("neo-tree.ui.renderer")
+          state.explicitly_opened_nodes = {}
+          state.force_open_folders = nil
+          renderer.collapse_all_nodes(state.tree)
+          renderer.redraw(state)
+        end, false)
+      end,
     },
     filesystem = {
       bind_to_cwd = false,
@@ -147,7 +168,7 @@ function M.opts()
       window = {
         mappings = {
           ["."] = "set_root",
-          [","] = "navigate_up",
+          [","] = "navigate_up_collapsed",
         },
       },
     },
