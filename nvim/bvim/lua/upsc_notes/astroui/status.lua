@@ -38,14 +38,6 @@ local modified = {
   hl = { fg = colors.yellow, bg = colors.bg_alt },
 }
 
-local readonly = {
-  condition = function()
-    return is_real_file(0) and vim.bo.readonly
-  end,
-  provider = " ro",
-  hl = { fg = colors.red, bg = colors.bg_alt },
-}
-
 local git_branch = {
   condition = function()
     return vim.b.gitsigns_head ~= nil and vim.b.gitsigns_head ~= ""
@@ -173,7 +165,6 @@ function M.setup()
       space,
       file,
       modified,
-      readonly,
       diagnostics,
       align,
       filetype,
