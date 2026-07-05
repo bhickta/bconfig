@@ -1,3 +1,4 @@
+local config = require("upsc_notes.config")
 local paths = require("upsc_notes.paths")
 
 return {
@@ -135,17 +136,7 @@ return {
       },
       picker = {
         ui_select = true,
-        matcher = {
-          fuzzy = true,
-          smartcase = true,
-          ignorecase = true,
-          sort_empty = false,
-          filename_bonus = true,
-          file_pos = true,
-          cwd_bonus = true,
-          frecency = false,
-          history_bonus = false,
-        },
+        matcher = config.get().picker.matcher,
         layout = {
           preset = "ivy",
         },
@@ -515,7 +506,7 @@ return {
     opts = {
       workspaces = {
         {
-          name = "upsc",
+          name = config.get().vault.name,
           path = paths.vault_root,
         },
       },

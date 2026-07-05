@@ -1,54 +1,60 @@
-vim.opt.number = true
-vim.opt.relativenumber = true
-vim.opt.mouse = ""
-vim.opt.backspace = vim.list_extend(vim.opt.backspace:get(), { "nostop" })
-vim.opt.clipboard = "unnamedplus"
-vim.opt.completeopt = { "menu", "menuone", "noselect" }
-vim.opt.confirm = true
-vim.opt.copyindent = true
-vim.opt.expandtab = true
-vim.opt.ignorecase = true
-vim.opt.infercase = true
-vim.opt.jumpoptions = {}
-vim.opt.linebreak = true
-vim.opt.preserveindent = true
-vim.opt.pumheight = 10
-vim.opt.smartcase = true
-vim.opt.shiftround = true
-vim.opt.shiftwidth = 0
-vim.opt.shortmess = vim.tbl_deep_extend("force", vim.opt.shortmess:get(), { s = true, I = true, c = true, C = true })
-vim.opt.cursorline = true
-vim.opt.signcolumn = "yes"
-vim.opt.splitright = true
-vim.opt.splitbelow = true
-vim.opt.tabclose = "uselast"
-vim.opt.tabstop = 2
-vim.opt.termguicolors = true
-vim.opt.updatetime = 250
-vim.opt.timeoutlen = 400
-vim.opt.title = true
-vim.opt.undofile = true
-vim.opt.virtualedit = "block"
-vim.opt.winborder = "rounded"
-vim.opt.writebackup = false
-vim.opt.grepprg = "rg --vimgrep --smart-case"
-vim.opt.scrolloff = 8
-vim.opt.sidescrolloff = 12
-vim.opt.showmode = false
-vim.opt.laststatus = 3
-vim.opt.cmdheight = 1
-vim.opt.fillchars = {
-  eob = " ",
-  fold = " ",
-  foldopen = "-",
-  foldclose = "+",
-  foldsep = " ",
-  diff = " ",
-  msgsep = " ",
-}
-vim.opt.list = false
-vim.opt.listchars = {
-  tab = "  ",
-  trail = ".",
-  nbsp = "+",
-}
+local M = {}
+
+function M.setup()
+  vim.opt.number = true
+  vim.opt.relativenumber = true
+  vim.opt.mouse = ""
+  vim.opt.backspace = vim.list_extend(vim.opt.backspace:get(), { "nostop" })
+  vim.opt.clipboard = "unnamedplus"
+  vim.opt.completeopt = { "menu", "menuone", "noselect" }
+  vim.opt.confirm = true
+  vim.opt.copyindent = true
+  vim.opt.expandtab = true
+  vim.opt.ignorecase = true
+  vim.opt.infercase = true
+  vim.opt.jumpoptions = {}
+  vim.opt.linebreak = true
+  vim.opt.preserveindent = true
+  vim.opt.pumheight = 10
+  vim.opt.smartcase = true
+  vim.opt.shiftround = true
+  vim.opt.shiftwidth = 0
+  vim.opt.shortmess = vim.tbl_deep_extend("force", vim.opt.shortmess:get(), { s = true, I = true, c = true, C = true })
+  vim.opt.cursorline = true
+  vim.opt.signcolumn = "yes"
+  vim.opt.splitright = true
+  vim.opt.splitbelow = true
+  vim.opt.tabclose = "uselast"
+  vim.opt.tabstop = 2
+  vim.opt.termguicolors = true
+  vim.opt.updatetime = 250
+  vim.opt.timeoutlen = 400
+  vim.opt.title = true
+  vim.opt.undofile = true
+  vim.opt.virtualedit = "block"
+  vim.opt.winborder = "rounded"
+  vim.opt.writebackup = false
+  vim.opt.grepprg = "rg --vimgrep --smart-case"
+  vim.opt.scrolloff = 8
+  vim.opt.sidescrolloff = 12
+  vim.opt.showmode = false
+  vim.opt.laststatus = 3
+  vim.opt.cmdheight = 1
+  vim.opt.fillchars = {
+    eob = " ",
+    fold = " ",
+    foldopen = "-",
+    foldclose = "+",
+    foldsep = " ",
+    diff = " ",
+    msgsep = " ",
+  }
+  vim.opt.list = false
+  vim.opt.listchars = {
+    tab = "  ",
+    trail = ".",
+    nbsp = "+",
+  }
+end
+
+return M

@@ -1,7 +1,7 @@
-local M = {}
+local config = require("upsc_notes.config")
 
-M.vault_root = "/home/bhickta/development/upsc"
-M.zettel_root = M.vault_root .. "/zettelkasten"
-M.in_root = M.vault_root .. "/in"
-
-return M
+return setmetatable({}, {
+  __index = function(_, key)
+    return config.get().paths[key]
+  end,
+})

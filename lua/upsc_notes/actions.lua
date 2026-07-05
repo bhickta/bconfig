@@ -1,3 +1,4 @@
+local config = require("upsc_notes.config")
 local paths = require("upsc_notes.paths")
 
 local M = {}
@@ -48,23 +49,7 @@ local function open_tree_at(path, reveal_file)
 end
 
 local function picker_defaults(opts)
-  return vim.tbl_deep_extend("force", {
-    matcher = {
-      fuzzy = true,
-      smartcase = true,
-      ignorecase = true,
-      sort_empty = false,
-      filename_bonus = true,
-      file_pos = true,
-      cwd_bonus = true,
-      frecency = false,
-      history_bonus = false,
-    },
-    sort = {
-      fields = { "score:desc", "#text", "idx" },
-    },
-    debug = {},
-  }, opts or {})
+  return config.picker_defaults(opts)
 end
 
 local function file_command()
@@ -129,6 +114,11 @@ local function is_tree_window(win)
 end
 
 local function find_files(opts)
+  if not is_dir(opts.cwd) then
+    vim.notify("File search root does not exist: " .. opts.cwd, vim.log.levels.WARN)
+    return
+  end
+
   opts.hidden = true
   opts.ignored = false
   opts.cmd = opts.cmd or file_command()
@@ -144,6 +134,11 @@ local function find_files(opts)
 end
 
 local function grep(opts)
+  if not is_dir(opts.cwd) then
+    vim.notify("Content search root does not exist: " .. opts.cwd, vim.log.levels.WARN)
+    return
+  end
+
   if vim.fn.executable("rg") ~= 1 then
     vim.notify("Content search needs ripgrep: install rg for live grep.", vim.log.levels.WARN)
     return
@@ -183,6 +178,11 @@ function M.grep_in()
 end
 
 function M.search_word()
+  if not is_dir(paths.zettel_root) then
+    vim.notify("Content search root does not exist: " .. paths.zettel_root, vim.log.levels.WARN)
+    return
+  end
+
   local word = vim.fn.expand("<cword>")
   local picker = snacks_picker()
   if picker then
@@ -371,14 +371,7 @@ local function set_reading_window(enabled)
 end
 
 local function set_markdown_reading_buffer(enabled)
-  vim.opt_local.wrap = true
-  vim.opt_local.linebreak = true
-  vim.opt_local.breakindent = true
-  vim.opt_local.breakindentopt = "shift:2,min:40,sbr"
-  vim.opt_local.showbreak = "  "
-  vim.opt_local.conceallevel = enabled and 2 or 1
-  vim.opt_local.concealcursor = enabled and "nc" or ""
-  vim.opt_local.colorcolumn = ""
+  config.apply_markdown_reading_options(enabled)
 end
 
 function M.set_read_mode()
