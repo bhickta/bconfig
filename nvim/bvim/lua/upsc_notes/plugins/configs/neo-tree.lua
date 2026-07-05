@@ -2,10 +2,63 @@ local icons = require("upsc_notes.astroui.icons")
 
 local M = {}
 
+local function collect_files(root)
+  local files = {}
+  local uv = vim.uv or vim.loop
+  local skipped_dirs = {
+    [".git"] = true,
+    [".smart-env"] = true,
+    [".trash"] = true,
+  }
+
+  local function scan(dir)
+    local handle = uv.fs_scandir(dir)
+    if not handle then
+      return
+    end
+
+    while true do
+      local name, kind = uv.fs_scandir_next(handle)
+      if not name then
+        break
+      end
+
+      local path = dir .. "/" .. name
+      if kind == "file" then
+        table.insert(files, path)
+      elseif kind == "directory" and not skipped_dirs[name] then
+        scan(path)
+      end
+    end
+  end
+
+  scan(root)
+  table.sort(files)
+  return files
+end
+
 local function toggleterm_in_direction(state, direction)
   local node = state.tree:get_node()
   local path = node.type == "file" and node:get_parent_id() or node:get_id()
   require("toggleterm.terminal").Terminal:new({ dir = path, direction = direction }):toggle()
+end
+
+local function open_folder_files(state)
+  local node = state.tree:get_node()
+  local dir = node.type == "directory" and node:get_id() or node:get_parent_id()
+  local files = collect_files(dir)
+
+  if #files == 0 then
+    vim.notify("No files found in folder: " .. dir, vim.log.levels.WARN)
+    return
+  end
+
+  local utils = require("neo-tree.utils")
+  for _, file in ipairs(files) do
+    vim.cmd.badd(vim.fn.fnameescape(file))
+  end
+  utils.open_file(state, files[1])
+  vim.notify(("Opened %d files from folder"):format(#files), vim.log.levels.INFO)
 end
 
 function M.opts()
@@ -127,6 +180,7 @@ function M.opts()
       toggleterm_vertical = function(state)
         toggleterm_in_direction(state, "vertical")
       end,
+      open_folder_files = open_folder_files,
       navigate_up_collapsed = function(state)
         local parent_path = require("neo-tree.utils").split_path(state.path)
         if not parent_path or parent_path == state.path then
@@ -169,6 +223,7 @@ function M.opts()
         mappings = {
           ["."] = "set_root",
           [","] = "navigate_up_collapsed",
+          go = "open_folder_files",
         },
       },
     },
@@ -199,6 +254,9 @@ function M.opts()
         handler = function()
           vim.opt_local.signcolumn = "auto"
           vim.opt_local.foldcolumn = "0"
+          vim.opt_local.wrap = true
+          vim.opt_local.linebreak = true
+          vim.opt_local.sidescrolloff = 0
         end,
       },
     },
