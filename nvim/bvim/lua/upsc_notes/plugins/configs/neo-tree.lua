@@ -344,6 +344,7 @@ function M.opts()
           vim.wo.wrap = true
           vim.wo.linebreak = true
           vim.wo.sidescrolloff = 0
+          vim.wo.statuscolumn = ""
           local ok, state = pcall(require("neo-tree.sources.manager").get_state_for_window)
           if ok and state then
             vim.schedule(function()

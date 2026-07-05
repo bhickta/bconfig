@@ -197,6 +197,7 @@ function M.setup()
       vim.wo.wrap = true
       vim.wo.linebreak = true
       vim.wo.sidescrolloff = 0
+      vim.wo.statuscolumn = ""
 
       for _, shortcut in ipairs(shortcuts.tree_buffer(actions)) do
         vim.keymap.set(shortcut.mode, shortcut.lhs, shortcut.rhs, {

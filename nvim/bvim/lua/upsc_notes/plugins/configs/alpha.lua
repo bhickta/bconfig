@@ -14,8 +14,19 @@ local function dashboard_width()
   return vim.api.nvim_win_get_width(0)
 end
 
+local function tree_visible()
+  for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+    local buf = vim.api.nvim_win_get_buf(win)
+    if vim.bo[buf].filetype == "neo-tree" then
+      return true
+    end
+  end
+
+  return false
+end
+
 local function narrow_dashboard()
-  return dashboard_width() < 64
+  return tree_visible() or dashboard_width() < 64
 end
 
 local function header()
@@ -56,7 +67,9 @@ local function buttons(dashboard)
     local button = dashboard.button(shortcut.key, button_label(shortcut), shortcut.command)
     if narrow_dashboard() then
       button.opts.position = "left"
-      button.opts.width = 24
+      button.opts.align_shortcut = "left"
+      button.opts.shortcut = shortcut.key .. "  "
+      button.opts.width = nil
     else
       button.opts.position = "center"
       button.opts.width = 50
