@@ -22,12 +22,12 @@ fi
 
 cat > "${bin_dir}/avim" <<EOF
 #!/usr/bin/env sh
-exec env NVIM_APPNAME=avim ${nvim_bin} "\$@"
+exec env NVIM_APPNAME=avim NVIM_NOTTYFAST=1 ${nvim_bin} "\$@"
 EOF
 
 cat > "${bin_dir}/bvim" <<EOF
 #!/usr/bin/env sh
-exec env NVIM_APPNAME=bvim ${nvim_bin} "\$@"
+exec env NVIM_APPNAME=bvim NVIM_NOTTYFAST=1 ${nvim_bin} "\$@"
 EOF
 
 chmod +x "${bin_dir}/avim" "${bin_dir}/bvim"
