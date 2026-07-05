@@ -28,4 +28,6 @@ link_path() {
   printf 'link %s -> %s\n' "${target_path}" "${source_path}"
 }
 
+link_path "${repo_root}/nvim/nvim" "${HOME}/.config/nvim"
 link_path "${repo_root}/nvim/bvim" "${HOME}/.config/bvim"
+link_path "${repo_root}/nvim/avim" "${HOME}/.config/avim"

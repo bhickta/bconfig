@@ -4,7 +4,9 @@ Generated from the current machine on 2026-07-05.
 
 ## Already Managed
 
+- `~/.config/nvim` -> `nvim/nvim`
 - `~/.config/bvim` -> `nvim/bvim`
+- `~/.config/avim` -> `nvim/avim`
 
 ## Best Candidates To Add First
 
