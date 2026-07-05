@@ -25,6 +25,7 @@ function M.which_key_groups()
     { "<leader>m", group = "markdown/notes" },
     { "<leader>p", group = "plugins" },
     { "<leader>t", group = "tree" },
+    { "<leader>T", group = "terminal" },
     { "<leader>r", group = "read/edit" },
     { "<leader>u", group = "ui" },
   }
@@ -96,6 +97,17 @@ function M.global(actions)
     map("n", "<leader>pS", command("Lazy sync"), "Plugins sync"),
     map("n", "<leader>pu", command("Lazy check"), "Plugins check updates"),
     map("n", "<leader>pU", command("Lazy update"), "Plugins update"),
+
+    map("n", "<leader>Tt", command("ToggleTerm"), "Toggle terminal"),
+    map("n", "<leader>Tf", command("ToggleTerm direction=float"), "Terminal float"),
+    map("n", "<leader>Th", command("ToggleTerm size=12 direction=horizontal"), "Terminal horizontal"),
+    map("n", "<leader>Tv", command("ToggleTerm size=80 direction=vertical"), "Terminal vertical"),
+    map("n", "<F7>", command("ToggleTerm"), "Toggle terminal"),
+    map("i", "<F7>", "<esc>" .. command("ToggleTerm"), "Toggle terminal"),
+    map("t", "<F7>", command("ToggleTerm"), "Toggle terminal"),
+    map("n", "<C-'>", command("ToggleTerm"), "Toggle terminal"),
+    map("i", "<C-'>", "<esc>" .. command("ToggleTerm"), "Toggle terminal"),
+    map("t", "<C-'>", command("ToggleTerm"), "Toggle terminal"),
 
     map("n", "<leader>uD", actions.dismiss_notifications, "Dismiss notifications"),
     map("n", "<leader>uZ", actions.toggle_zen, "Toggle zen mode"),

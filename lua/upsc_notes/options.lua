@@ -38,6 +38,7 @@ function M.setup()
   vim.opt.scrolloff = 8
   vim.opt.sidescrolloff = 12
   vim.opt.showmode = false
+  vim.opt.showtabline = 2
   vim.opt.laststatus = 3
   vim.opt.cmdheight = 1
   vim.opt.fillchars = {

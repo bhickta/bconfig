@@ -193,6 +193,57 @@ return {
     },
   },
   {
+    "rebelot/heirline.nvim",
+    event = "BufEnter",
+    config = function()
+      require("upsc_notes.heirline").setup()
+    end,
+  },
+  {
+    "akinsho/toggleterm.nvim",
+    version = "^2",
+    cmd = { "ToggleTerm", "TermExec" },
+    opts = {
+      size = 12,
+      direction = "float",
+      shade_terminals = false,
+      float_opts = {
+        border = "rounded",
+        width = function()
+          return math.min(120, math.floor(vim.o.columns * 0.8))
+        end,
+        height = function()
+          return math.min(32, math.floor(vim.o.lines * 0.75))
+        end,
+      },
+      highlights = {
+        Normal = { link = "Normal" },
+        NormalFloat = { link = "NormalFloat" },
+        FloatBorder = { link = "FloatBorder" },
+        StatusLine = { link = "StatusLine" },
+        StatusLineNC = { link = "StatusLineNC" },
+        WinBar = { link = "WinBar" },
+        WinBarNC = { link = "WinBarNC" },
+      },
+      on_create = function(term)
+        vim.opt_local.foldcolumn = "0"
+        vim.opt_local.signcolumn = "no"
+        vim.opt_local.winbar = ""
+        local function toggle()
+          term:toggle()
+        end
+        vim.keymap.set({ "n", "t", "i" }, "<F7>", toggle, {
+          buffer = term.bufnr,
+          desc = "Toggle terminal",
+        })
+        vim.keymap.set({ "n", "t", "i" }, "<C-'>", toggle, {
+          buffer = term.bufnr,
+          desc = "Toggle terminal",
+        })
+      end,
+    },
+  },
+  {
     "folke/which-key.nvim",
     event = "VeryLazy",
     opts = {
@@ -493,6 +544,21 @@ return {
               end
             end)
           end,
+          toggleterm_float = function(state)
+            local node = state.tree:get_node()
+            local path = node.type == "file" and node:get_parent_id() or node:get_id()
+            require("toggleterm.terminal").Terminal:new({ dir = path, direction = "float" }):toggle()
+          end,
+          toggleterm_horizontal = function(state)
+            local node = state.tree:get_node()
+            local path = node.type == "file" and node:get_parent_id() or node:get_id()
+            require("toggleterm.terminal").Terminal:new({ dir = path, direction = "horizontal" }):toggle()
+          end,
+          toggleterm_vertical = function(state)
+            local node = state.tree:get_node()
+            local path = node.type == "file" and node:get_parent_id() or node:get_id()
+            require("toggleterm.terminal").Terminal:new({ dir = path, direction = "vertical" }):toggle()
+          end,
         },
         filesystem = {
           bind_to_cwd = false,
@@ -519,6 +585,10 @@ return {
             ["[b"] = "prev_source",
             ["]b"] = "next_source",
             O = "system_open",
+            T = { "show_help", nowait = false, config = { title = "Terminal", prefix_key = "T" } },
+            Tf = "toggleterm_float",
+            Th = "toggleterm_horizontal",
+            Tv = "toggleterm_vertical",
             Y = "copy_selector",
             h = "parent_or_close",
             l = "child_or_open",
