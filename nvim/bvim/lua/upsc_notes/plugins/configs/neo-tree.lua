@@ -407,6 +407,12 @@ function M.opts()
     },
     filesystem = {
       bind_to_cwd = false,
+      commands = {
+        open = open_node,
+        open_split = open_node_split,
+        open_vsplit = open_node_vsplit,
+        open_tabnew = open_node_tabnew,
+      },
       follow_current_file = { enabled = true },
       filtered_items = {
         visible = true,
