@@ -21,13 +21,29 @@ local function assert_unique(items, key_fn, label)
   end
 end
 
-assert_unique(shortcuts.global(actions), function(shortcut)
+local global_shortcuts = shortcuts.global(actions)
+
+local function assert_has_global(mode, lhs)
+  for _, shortcut in ipairs(global_shortcuts) do
+    if shortcut.mode == mode and shortcut.lhs == lhs then
+      return
+    end
+  end
+
+  error(("missing global shortcut: %s %s"):format(mode, lhs))
+end
+
+assert_unique(global_shortcuts, function(shortcut)
   return shortcut.mode .. " " .. shortcut.lhs
 end, "global shortcut")
 
 assert_unique(shortcuts.tree_buffer(actions), function(shortcut)
   return shortcut.mode .. " " .. shortcut.lhs
 end, "tree shortcut")
+
+for _, lhs in ipairs({ "]b", "[b", "<S-l>", "<S-h>", "<leader>bb", "<leader>bn", "<leader>bp", "<leader>ba", "<leader>bd", "<leader>bo" }) do
+  assert_has_global("n", lhs)
+end
 
 assert_unique(shortcuts.dashboard_buttons({
   dashboard = {

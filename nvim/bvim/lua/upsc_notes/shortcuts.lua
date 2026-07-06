@@ -28,6 +28,7 @@ end
 
 function M.which_key_groups()
   return {
+    { "<leader>b", group = "buffers" },
     { "<leader>f", group = "find/search" },
     { "<leader>m", group = "markdown/notes" },
     { "<leader>p", group = "plugins" },
@@ -47,6 +48,17 @@ function M.global(actions)
     map("n", "|", command("vsplit"), "Vertical split"),
     map("n", "\\", command("split"), "Horizontal split"),
     map("n", "<leader>?", actions.find_keymaps, "Find keymaps"),
+
+    map("n", "]b", actions.next_buffer, "Next buffer"),
+    map("n", "[b", actions.prev_buffer, "Previous buffer"),
+    map("n", "<S-l>", actions.next_buffer, "Next buffer"),
+    map("n", "<S-h>", actions.prev_buffer, "Previous buffer"),
+    map("n", "<leader>bb", actions.find_buffers, "Find buffers"),
+    map("n", "<leader>bn", actions.next_buffer, "Next buffer"),
+    map("n", "<leader>bp", actions.prev_buffer, "Previous buffer"),
+    map("n", "<leader>ba", actions.alternate_buffer, "Alternate buffer"),
+    map("n", "<leader>bd", actions.close_buffer, "Close buffer"),
+    map("n", "<leader>bo", actions.close_other_buffers, "Close other buffers"),
 
     map("n", "<C-h>", smart_split("move_cursor_left"), "Move to left split"),
     map("n", "<C-j>", smart_split("move_cursor_down"), "Move to below split"),
