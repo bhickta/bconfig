@@ -37,13 +37,50 @@ local function collect_files(root)
   return files
 end
 
+local function current_tree_state(state)
+  if state and state.tree then
+    return state
+  end
+
+  local ok, current = pcall(require("neo-tree.sources.manager").get_state_for_window)
+  if ok and current and current.tree then
+    return current
+  end
+end
+
+local function current_node(state)
+  state = current_tree_state(state)
+  if not state then
+    vim.notify("Neo-tree is still loading. Try again after the tree redraws.", vim.log.levels.WARN)
+    return nil, nil
+  end
+
+  local ok, node = pcall(state.tree.get_node, state.tree)
+  if not ok or not node then
+    vim.notify("Neo-tree has no focused node.", vim.log.levels.WARN)
+    return nil, nil
+  end
+
+  return state, node
+end
+
 local function toggleterm_in_direction(state, direction)
-  local node = state.tree:get_node()
+  local node
+  state, node = current_node(state)
+  if not state then
+    return
+  end
+
   local path = node.type == "file" and node:get_parent_id() or node:get_id()
   require("toggleterm.terminal").Terminal:new({ dir = path, direction = direction }):toggle()
 end
 
 local function redraw_collapsed(state, focus_path)
+  state = current_tree_state(state)
+  if not state then
+    return
+  end
+
   local renderer = require("neo-tree.ui.renderer")
   state.explicitly_opened_nodes = {}
   state.force_open_folders = nil
@@ -59,6 +96,11 @@ local function collapse_filtered_tree(state)
 end
 
 local function toggle_filter(state)
+  state = current_tree_state(state)
+  if not state then
+    return
+  end
+
   local filesystem = require("neo-tree.sources.filesystem")
   if state.search_pattern and state.search_pattern ~= "" then
     state.upsc_saved_filter = state.search_pattern
@@ -82,13 +124,23 @@ local function toggle_filter(state)
 end
 
 local function clear_filter(state)
+  state = current_tree_state(state)
+  if not state then
+    return
+  end
+
   state.upsc_saved_filter = nil
   require("neo-tree.sources.filesystem").reset_search(state, true)
   vim.notify("Tree filter cleared", vim.log.levels.INFO)
 end
 
 local function focus_folder(state)
-  local node = state.tree:get_node()
+  local node
+  state, node = current_node(state)
+  if not state then
+    return
+  end
+
   local path = node.type == "directory" and node:get_id() or node:get_parent_id()
   if not path or path == state.path then
     redraw_collapsed(state, path)
@@ -107,6 +159,11 @@ local function focus_folder(state)
 end
 
 local function unfocus_folder(state)
+  state = current_tree_state(state)
+  if not state then
+    return
+  end
+
   local parent_path = require("neo-tree.utils").split_path(state.path)
   if not parent_path or parent_path == state.path then
     redraw_collapsed(state, state.path)
@@ -126,7 +183,12 @@ local function unfocus_folder(state)
 end
 
 local function open_folder_files(state)
-  local node = state.tree:get_node()
+  local node
+  state, node = current_node(state)
+  if not state then
+    return
+  end
+
   local dir = node.type == "directory" and node:get_id() or node:get_parent_id()
   local files = collect_files(dir)
 
@@ -141,6 +203,59 @@ local function open_folder_files(state)
   end
   utils.open_file(state, files[1])
   vim.notify(("Opened %d files from folder"):format(#files), vim.log.levels.INFO)
+end
+
+local function open_node_with_cmd(state, open_cmd)
+  local node
+  state, node = current_node(state)
+  if not state then
+    return
+  end
+
+  local utils = require("neo-tree.utils")
+  local should_expand_file = state.config
+    and state.config.expand_nested_files
+    and node.type == "file"
+    and not node:is_expanded()
+
+  if utils.is_expandable(node) and (node.type ~= "file" or should_expand_file) then
+    require("neo-tree.sources.filesystem").toggle_directory(state, node)
+    return
+  end
+
+  local path = node.path or node:get_id()
+  local bufnr = node.extra and node.extra.bufnr
+  if node.type == "terminal" then
+    path = node:get_id()
+  end
+
+  require("neo-tree.sources.common.commands").revert_preview()
+  utils.open_file(state, path, open_cmd, bufnr)
+
+  local extra = node.extra or {}
+  local pos = extra.position or extra.end_position
+  if pos then
+    vim.api.nvim_win_set_cursor(0, { (pos[1] or 0) + 1, pos[2] or 0 })
+    vim.api.nvim_win_call(0, function()
+      vim.cmd("normal! zvzz")
+    end)
+  end
+end
+
+local function open_node(state)
+  open_node_with_cmd(state, "e")
+end
+
+local function open_node_split(state)
+  open_node_with_cmd(state, "split")
+end
+
+local function open_node_vsplit(state)
+  open_node_with_cmd(state, "vsplit")
+end
+
+local function open_node_tabnew(state)
+  open_node_with_cmd(state, "tabnew")
 end
 
 function M.opts()
@@ -196,11 +311,23 @@ function M.opts()
       },
     },
     commands = {
+      open = open_node,
+      open_split = open_node_split,
+      open_vsplit = open_node_vsplit,
+      open_tabnew = open_node_tabnew,
       system_open = function(state)
-        vim.ui.open(state.tree:get_node():get_id())
+        local _, node = current_node(state)
+        if node then
+          vim.ui.open(node:get_id())
+        end
       end,
       parent_or_close = function(state)
-        local node = state.tree:get_node()
+        local node
+        state, node = current_node(state)
+        if not state then
+          return
+        end
+
         if node:has_children() and node:is_expanded() then
           state.commands.toggle_node(state)
         else
@@ -208,7 +335,12 @@ function M.opts()
         end
       end,
       child_or_open = function(state)
-        local node = state.tree:get_node()
+        local node
+        state, node = current_node(state)
+        if not state then
+          return
+        end
+
         if node:has_children() then
           if not node:is_expanded() then
             state.commands.toggle_node(state)
@@ -222,7 +354,12 @@ function M.opts()
         end
       end,
       copy_selector = function(state)
-        local node = state.tree:get_node()
+        local node
+        state, node = current_node(state)
+        if not state then
+          return
+        end
+
         local filepath = node:get_id()
         local filename = node.name
         local modify = vim.fn.fnamemodify
