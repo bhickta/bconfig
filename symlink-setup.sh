@@ -31,3 +31,8 @@ link_path() {
 link_path "${repo_root}/nvim/nvim" "${HOME}/.config/nvim"
 link_path "${repo_root}/nvim/bvim" "${HOME}/.config/bvim"
 link_path "${repo_root}/nvim/avim" "${HOME}/.config/avim"
+
+link_path "${repo_root}/codex/config.toml" "${HOME}/.codex/config.toml"
+link_path "${repo_root}/codex/AGENTS.md" "${HOME}/.codex/AGENTS.md"
+link_path "${repo_root}/codex/hooks.json" "${HOME}/.codex/hooks.json"
+link_path "${repo_root}/codex/rules" "${HOME}/.codex/rules"

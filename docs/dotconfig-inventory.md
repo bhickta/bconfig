@@ -7,6 +7,10 @@ Generated from the current machine on 2026-07-05.
 - `~/.config/nvim` -> `nvim/nvim`
 - `~/.config/bvim` -> `nvim/bvim`
 - `~/.config/avim` -> `nvim/avim`
+- `~/.codex/config.toml` -> `codex/config.toml`
+- `~/.codex/AGENTS.md` -> `codex/AGENTS.md`
+- `~/.codex/hooks.json` -> `codex/hooks.json`
+- `~/.codex/rules` -> `codex/rules`
 
 ## Best Candidates To Add First
 

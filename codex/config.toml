@@ -1,0 +1,164 @@
+approvals_reviewer = "user"
+model = "gpt-5.5"
+model_reasoning_effort = "medium"
+plan_mode_reasoning_effort = "xhigh"
+
+# --- Headroom init provider ---
+model_provider = "headroom"
+openai_base_url = "http://127.0.0.1:8787/v1"
+
+[model_providers.headroom]
+name = "Headroom init proxy"
+base_url = "http://127.0.0.1:8787/v1"
+supports_websockets = true
+requires_openai_auth = true
+# --- end Headroom init provider ---
+
+[mcp_servers.tokensave]
+args = ["serve"]
+command = "tokensave"
+
+[mcp_servers.tokensave.tools.tokensave_affected]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_ast_grep_rewrite]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_branch_diff]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_branch_list]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_branch_search]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_callees]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_callers]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_changelog]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_circular]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_commit_context]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_complexity]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_context]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_coupling]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_dead_code]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_dependency_depth]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_diff_context]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_distribution]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_doc_coverage]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_dsm]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_files]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_gini]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_god_class]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_health]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_hotspots]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_impact]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_inheritance_depth]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_insert_at]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_largest]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_module_api]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_multi_str_replace]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_node]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_port_order]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_port_status]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_pr_context]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_rank]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_recursion]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_rename_preview]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_search]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_session_end]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_session_start]
+approval_mode = "approve"
+
+[mcp_servers.tokensave.tools.tokensave_similar]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_simplify_scan]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_status]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_str_replace]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_test_map]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_test_risk]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_type_hierarchy]
+approval_mode = "auto"
+
+[mcp_servers.tokensave.tools.tokensave_unused_imports]
+approval_mode = "auto"
+

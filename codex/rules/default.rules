@@ -1,0 +1,6 @@
+prefix_rule(pattern=["pwd"], decision="allow")
+prefix_rule(pattern=["rg", "--files"], decision="allow")
+prefix_rule(pattern=["sed", "-n"], decision="allow")
+prefix_rule(pattern=["lsb_release", "-a"], decision="allow")
+prefix_rule(pattern=["printenv", "XDG_SESSION_TYPE"], decision="allow")
+prefix_rule(pattern=["uname", "-a"], decision="allow")
