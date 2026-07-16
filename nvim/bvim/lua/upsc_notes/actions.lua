@@ -219,6 +219,10 @@ function M.find_scope_file()
   find_files({ cwd = current_scope_dir(), title = "Scope files" })
 end
 
+function M.find_folder_files(dir)
+  find_files({ cwd = dir, title = "Files in " .. vim.fn.fnamemodify(dir, ":t") })
+end
+
 function M.find_recent_files()
   local picker = snacks_picker()
   if picker then
@@ -242,6 +246,10 @@ end
 
 function M.grep_scope()
   grep({ cwd = current_scope_dir(), title = "Grep current scope" })
+end
+
+function M.grep_folder(dir)
+  grep({ cwd = dir, title = "Grep " .. vim.fn.fnamemodify(dir, ":t") })
 end
 
 function M.resume_picker()

@@ -205,6 +205,30 @@ local function open_folder_files(state)
   vim.notify(("Opened %d files from folder"):format(#files), vim.log.levels.INFO)
 end
 
+local function selected_folder(state)
+  local node
+  state, node = current_node(state)
+  if not state then
+    return
+  end
+
+  return node.type == "directory" and node:get_id() or node:get_parent_id()
+end
+
+local function find_folder_files(state)
+  local dir = selected_folder(state)
+  if dir then
+    require("upsc_notes.actions").find_folder_files(dir)
+  end
+end
+
+local function grep_folder(state)
+  local dir = selected_folder(state)
+  if dir then
+    require("upsc_notes.actions").grep_folder(dir)
+  end
+end
+
 local function open_node_with_cmd(state, open_cmd)
   local node
   state, node = current_node(state)
@@ -404,6 +428,8 @@ function M.opts()
       unfocus_folder = unfocus_folder,
       toggle_filter = toggle_filter,
       clear_filter = clear_filter,
+      find_folder_files = find_folder_files,
+      grep_folder = grep_folder,
     },
     filesystem = {
       bind_to_cwd = false,
@@ -438,6 +464,8 @@ function M.opts()
             },
           },
           ["<C-x>"] = { "clear_filter", desc = "Clear tree filter" },
+          ["<leader>fS"] = { "find_folder_files", desc = "Find file in selected folder" },
+          ["<leader>f/"] = { "grep_folder", desc = "Grep selected folder" },
           tf = { "toggle_filter", desc = "Toggle tree filter" },
           ["."] = "focus_folder",
           [","] = "unfocus_folder",
