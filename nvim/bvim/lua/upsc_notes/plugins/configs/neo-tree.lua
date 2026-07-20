@@ -141,7 +141,12 @@ local function focus_folder(state)
     return
   end
 
-  local path = node.type == "directory" and node:get_id() or node:get_parent_id()
+  if node.type == "file" then
+    state.commands.open(state)
+    return
+  end
+
+  local path = node:get_id()
   if not path or path == state.path then
     redraw_collapsed(state, path)
     return

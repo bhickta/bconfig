@@ -5,6 +5,10 @@ require("upsc_notes.config").setup()
 local opts = require("upsc_notes.plugins.configs.neo-tree").opts()
 local mappings = opts.filesystem.window.mappings
 
+if mappings["."] ~= "focus_folder" then
+  error("missing Neo-tree forward mapping: . -> focus_folder")
+end
+
 local expected = {
   ["<leader>fS"] = "find_folder_files",
   ["<leader>f/"] = "grep_folder",
@@ -58,4 +62,18 @@ node = {
 opts.commands.grep_folder(state)
 if captured.grep ~= "/notes/active/subfolder" then
   error("folder grep should use a selected file's parent directory")
+end
+
+local opened = false
+state.commands = {
+  open = function(open_state)
+    if open_state ~= state then
+      error("forward should open the selected note with the current Neo-tree state")
+    end
+    opened = true
+  end,
+}
+opts.commands.focus_folder(state)
+if not opened then
+  error("Neo-tree forward should open the highlighted note")
 end
