@@ -19,8 +19,13 @@ assert_eq(estimate.words, 501, "word count")
 assert_eq(estimate.minutes, 2, "xfast estimate rounds up")
 assert_eq(estimate.completed_at, "12:02 AM", "12-hour completion time")
 
-vim.api.nvim_buf_set_lines(buf, 0, -1, false, { "one two three" })
+vim.api.nvim_buf_set_lines(buf, 0, -1, false, { "one two", "three" })
 assert_eq(reading_time.estimate(buf, midnight).words, 3, "word count refreshes after edits")
+assert_eq(reading_time.word_count_from(buf, 1), 3, "remaining count from first line")
+assert_eq(reading_time.word_count_from(buf, 2), 1, "remaining count from current line")
+if not reading_time.status(buf, { active = true, start_line = 2 }):find("▶ XFAST", 1, true) then
+  error("active reading status should show the auto-scroll marker")
+end
 
 vim.api.nvim_buf_set_lines(buf, 0, -1, false, { table.concat(vim.fn.map(vim.fn.range(1, 501), '"word"'), " ") })
 

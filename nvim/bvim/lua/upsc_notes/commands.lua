@@ -4,6 +4,7 @@ local paths = require("upsc_notes.paths")
 local reading_time = require("upsc_notes.reading_time")
 local block_focus = require("upsc_notes.block_focus")
 local selection_translation = require("upsc_notes.selection_translation")
+local auto_scroll = require("upsc_notes.auto_scroll")
 
 local M = {}
 
@@ -71,6 +72,9 @@ function M.setup()
   create_command("ToggleBlockFocus", block_focus.toggle)
   create_command("TranslateVisual", selection_translation.translate_selection, { range = true })
   create_command("ToggleSelectionTranslation", selection_translation.toggle)
+  create_command("AutoScroll", auto_scroll.start)
+  create_command("AutoScrollStop", auto_scroll.stop)
+  create_command("ToggleAutoScroll", auto_scroll.toggle)
 end
 
 return M

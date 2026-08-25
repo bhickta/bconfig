@@ -133,8 +133,14 @@ local reading_time = {
     return vim.bo[buf].filetype == "markdown" and vim.bo[buf].buftype == ""
   end,
   provider = function()
-    local buf = vim.api.nvim_win_get_buf(status_win())
-    return require("upsc_notes.reading_time").status(buf)
+    local win = status_win()
+    local buf = vim.api.nvim_win_get_buf(win)
+    local auto_scroll = require("upsc_notes.auto_scroll")
+    local active = auto_scroll.is_active(buf)
+    return require("upsc_notes.reading_time").status(buf, {
+      active = active,
+      start_line = active and vim.api.nvim_win_get_cursor(win)[1] or nil,
+    })
   end,
   hl = { fg = colors.green, bg = colors.bg_alt },
   update = { "TextChanged", "TextChangedI", "BufEnter", "BufWritePost" },
