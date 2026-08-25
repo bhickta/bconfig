@@ -1,6 +1,6 @@
 local M = {}
 
-M.modes = { "slow", "medium", "fast", "xfast" }
+M.modes = { "xxslow", "xslow", "slow", "medium", "fast", "xfast" }
 
 local word_count_cache = {}
 
@@ -50,7 +50,7 @@ end
 function M.set_mode(mode, opts)
   mode = mode:lower()
   if not valid_mode(mode) then
-    error(("Unknown reading speed %q (use slow, medium, fast, or xfast)"):format(mode))
+    error(("Unknown reading speed %q (use %s)"):format(mode, table.concat(M.modes, ", ")))
   end
 
   vim.g.upsc_reading_speed_mode = mode

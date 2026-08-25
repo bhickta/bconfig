@@ -13,6 +13,12 @@ end
 reading_time.set_mode("slow", { notify = false })
 assert_eq(auto_scroll.delay_for_line("one two three"), 1200, "slow speed line delay")
 
+reading_time.set_mode("xslow", { notify = false })
+assert_eq(auto_scroll.delay_for_line("one two three"), 1800, "xslow line delay")
+
+reading_time.set_mode("xxslow", { notify = false })
+assert_eq(auto_scroll.delay_for_line("one two three"), 3000, "xxslow line delay")
+
 reading_time.set_mode("xfast", { notify = false })
 assert_eq(auto_scroll.delay_for_line("one two three"), 360, "xfast line delay")
 assert_eq(auto_scroll.delay_for_line(""), 50, "blank line delay")

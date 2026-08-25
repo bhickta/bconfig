@@ -29,6 +29,11 @@ end
 
 vim.api.nvim_buf_set_lines(buf, 0, -1, false, { table.concat(vim.fn.map(vim.fn.range(1, 501), '"word"'), " ") })
 
+reading_time.set_mode("xxslow", { notify = false })
+assert_eq(reading_time.estimate(buf, 0).minutes, 9, "xxslow estimate")
+reading_time.cycle_mode({ notify = false })
+assert_eq(reading_time.get_mode(), "xslow", "slow mode cycle")
+
 reading_time.set_mode("slow", { notify = false })
 assert_eq(reading_time.estimate(buf, 0).minutes, 4, "slow estimate")
 

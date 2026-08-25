@@ -54,6 +54,8 @@ local function default_config()
       disabled_concealcursor = "",
       default_speed = "xfast",
       speeds = {
+        xxslow = 60,
+        xslow = 100,
         slow = 150,
         medium = 250,
         fast = 350,
@@ -131,7 +133,7 @@ function M.validate(cfg)
     error("upsc_notes.config: reading.default_speed must name a configured reading speed")
   end
 
-  for _, mode in ipairs({ "slow", "medium", "fast", "xfast" }) do
+  for _, mode in ipairs({ "xxslow", "xslow", "slow", "medium", "fast", "xfast" }) do
     local words_per_minute = cfg.reading.speeds[mode]
     if type(words_per_minute) ~= "number" or words_per_minute <= 0 then
       error(("upsc_notes.config: reading.speeds.%s must be a positive number"):format(mode))
