@@ -160,11 +160,11 @@ local reading_time = {
     local active = auto_scroll.is_active(buf)
     return require("upsc_notes.reading_time").status(buf, {
       active = active,
-      start_line = active and vim.api.nvim_win_get_cursor(win)[1] or nil,
+      start_line = vim.api.nvim_win_get_cursor(win)[1],
     })
   end,
   hl = { fg = colors.green, bg = colors.bg_alt },
-  update = { "TextChanged", "TextChangedI", "BufEnter", "BufWritePost" },
+  update = { "CursorMoved", "TextChanged", "TextChangedI", "BufEnter", "BufWritePost", "User" },
 }
 
 local folder_reading_time = {
@@ -175,7 +175,7 @@ local folder_reading_time = {
     return require("upsc_notes.folder_reading_time").status(selected_tree_file())
   end,
   hl = { fg = colors.green, bg = colors.bg_alt },
-  update = { "CursorMoved", "BufEnter", "BufWritePost" },
+  update = { "CursorMoved", "BufEnter", "BufWritePost", "User" },
 }
 
 local bufferline = {

@@ -19,6 +19,16 @@ assert_eq(estimate.words, 501, "word count")
 assert_eq(estimate.minutes, 2, "xfast estimate rounds up")
 assert_eq(estimate.completed_at, "12:02 AM", "12-hour completion time")
 
+vim.api.nvim_buf_set_lines(buf, 0, -1, false, {
+  table.concat(vim.fn.map(vim.fn.range(1, 500), '"word"'), " "),
+  "word",
+})
+assert_eq(
+  reading_time.status(buf, { active = true, start_line = 2, now = midnight }),
+  " ▶ XFAST total 2 min / left 1 min / by 12:01 AM ",
+  "status shows total and cursor-based remaining reading time"
+)
+
 vim.api.nvim_buf_set_lines(buf, 0, -1, false, { "one two", "three" })
 assert_eq(reading_time.estimate(buf, midnight).words, 3, "word count refreshes after edits")
 assert_eq(reading_time.word_count_from(buf, 1), 3, "remaining count from first line")

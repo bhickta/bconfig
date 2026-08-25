@@ -94,9 +94,16 @@ end
 
 function M.status(buf, opts)
   opts = opts or {}
-  local estimate = M.estimate(buf, nil, opts.start_line)
+  local total = M.estimate(buf, opts.now)
+  local remaining = M.estimate(buf, opts.now, opts.start_line)
   local marker = opts.active and "▶ " or ""
-  return (" %s%s %d min / by %s "):format(marker, estimate.mode:upper(), estimate.minutes, estimate.completed_at)
+  return (" %s%s total %d min / left %d min / by %s "):format(
+    marker,
+    remaining.mode:upper(),
+    total.minutes,
+    remaining.minutes,
+    remaining.completed_at
+  )
 end
 
 return M
