@@ -102,7 +102,12 @@ function M.start(opts)
   if session then
     M.stop({ notify = false })
   end
-  session = { buf = buf, win = vim.api.nvim_get_current_win() }
+  local win = vim.api.nvim_get_current_win()
+  vim.api.nvim_win_set_cursor(win, { 1, 0 })
+  vim.api.nvim_win_call(win, function()
+    vim.cmd("normal! zt")
+  end)
+  session = { buf = buf, win = win }
   emit_change()
   schedule_current_line()
   if not (opts and opts.notify == false) then
@@ -132,6 +137,20 @@ function M.setup()
     group = group,
     pattern = "UpscReadingSpeedChanged",
     callback = M.reschedule,
+  })
+  vim.api.nvim_create_autocmd("CursorMoved", {
+    group = group,
+    desc = "Adjust auto-scroll timing after manual movement",
+    callback = function(event)
+      if
+        session
+        and event.buf == session.buf
+        and vim.api.nvim_win_is_valid(session.win)
+        and vim.api.nvim_win_get_cursor(session.win)[1] ~= session.scheduled_line
+      then
+        schedule_current_line()
+      end
+    end,
   })
   vim.api.nvim_create_autocmd({ "BufLeave", "WinLeave" }, {
     group = group,

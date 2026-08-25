@@ -3,6 +3,7 @@ package.path = vim.fn.getcwd() .. "/lua/?.lua;" .. vim.fn.getcwd() .. "/lua/?/in
 require("upsc_notes.config").setup()
 local reading_time = require("upsc_notes.reading_time")
 local auto_scroll = require("upsc_notes.auto_scroll")
+auto_scroll.setup()
 
 local function assert_eq(actual, expected, message)
   if actual ~= expected then
@@ -28,9 +29,23 @@ vim.api.nvim_set_current_buf(buf)
 vim.bo[buf].filetype = "markdown"
 vim.api.nvim_buf_set_lines(buf, 0, -1, false, { "one two three", "four five", "six" })
 
+local original_defer_fn = vim.defer_fn
+local deferred = {}
+vim.defer_fn = function(callback, delay)
+  table.insert(deferred, { callback = callback, delay = delay })
+end
+
+vim.api.nvim_win_set_cursor(0, { 3, 0 })
 auto_scroll.start({ notify = false })
 assert_eq(auto_scroll.is_active(buf), true, "auto-scroll starts for a Markdown note")
+assert_eq(vim.api.nvim_win_get_cursor(0)[1], 1, "auto-scroll always restarts from the top")
+local scheduled_before_move = #deferred
+vim.api.nvim_win_set_cursor(0, { 2, 0 })
+vim.api.nvim_exec_autocmds("CursorMoved", { buffer = buf })
+assert_eq(#deferred, scheduled_before_move + 1, "manual movement immediately reschedules auto-scroll")
+assert_eq(deferred[#deferred].delay, 240, "manual movement uses the new line's reading delay")
 auto_scroll.stop({ notify = false })
 assert_eq(auto_scroll.is_active(buf), false, "auto-scroll stops")
+vim.defer_fn = original_defer_fn
 
 vim.api.nvim_buf_delete(buf, { force = true })
