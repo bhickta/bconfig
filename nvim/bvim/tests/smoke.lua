@@ -21,6 +21,9 @@ local expected_commands = {
   "MarkdownRenderToggle",
   "ReadingSpeed",
   "ReadingSpeedCycle",
+  "BlockFocus",
+  "BlockFocusOff",
+  "ToggleBlockFocus",
 }
 
 for _, command in ipairs(expected_commands) do

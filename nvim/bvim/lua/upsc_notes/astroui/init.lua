@@ -29,6 +29,8 @@ function M.apply()
   set("UpscDashboardButton", { fg = colors.fg })
   set("UpscDashboardShortcut", { fg = colors.peach, bold = true })
   set("UpscDashboardFooter", { fg = colors.muted })
+  set("UpscBlockFocus", { bg = colors.bg_alt })
+  set("UpscBlockFocusDim", { fg = colors.muted })
 
   set("markdownH1", { fg = colors.blue, bold = true })
   set("markdownH2", { fg = colors.mauve, bold = true })

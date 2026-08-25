@@ -1,6 +1,7 @@
 local actions = require("upsc_notes.actions")
 local config = require("upsc_notes.config")
 local shortcuts = require("upsc_notes.shortcuts")
+local block_focus = require("upsc_notes.block_focus")
 
 local M = {}
 
@@ -106,6 +107,7 @@ function M.setup()
       if vim.g.upsc_q_close_windows then
         vim.g.upsc_q_close_windows[event.buf] = nil
       end
+      block_focus.forget(event.buf)
     end,
   })
 
@@ -187,6 +189,14 @@ function M.setup()
     desc = "Restore markdown read/edit window mode",
     callback = function()
       actions.apply_current_window_mode()
+    end,
+  })
+
+  vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI", "TextChanged", "TextChangedI", "BufEnter" }, {
+    group = group,
+    desc = "Update the focused Markdown indentation block",
+    callback = function(event)
+      block_focus.refresh(event.buf)
     end,
   })
 

@@ -130,6 +130,7 @@ function M.global(actions)
     map("n", "<leader>rs", actions.toggle_study_mode, "Toggle study mode"),
     map("n", "<leader>rm", actions.toggle_markdown_render, "Toggle markdown render"),
     map("n", "<leader>rt", require("upsc_notes.reading_time").cycle_mode, "Cycle reading speed"),
+    map("n", "<leader>rf", require("upsc_notes.block_focus").toggle, "Toggle block focus"),
 
     map("n", "<leader>pi", command("Lazy install"), "Plugins install"),
     map("n", "<leader>ps", command("Lazy home"), "Plugins status"),

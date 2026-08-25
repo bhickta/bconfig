@@ -2,6 +2,7 @@ local actions = require("upsc_notes.actions")
 local config = require("upsc_notes.config")
 local paths = require("upsc_notes.paths")
 local reading_time = require("upsc_notes.reading_time")
+local block_focus = require("upsc_notes.block_focus")
 
 local M = {}
 
@@ -64,6 +65,9 @@ function M.setup()
     end,
   })
   create_command("ReadingSpeedCycle", reading_time.cycle_mode)
+  create_command("BlockFocus", block_focus.enable)
+  create_command("BlockFocusOff", block_focus.disable)
+  create_command("ToggleBlockFocus", block_focus.toggle)
 end
 
 return M

@@ -50,6 +50,8 @@ for _, mode in ipairs({ "n", "t" }) do
   assert_has_global(mode, "<C-.>")
 end
 
+assert_has_global("n", "<leader>rf")
+
 assert_unique(shortcuts.dashboard_buttons({
   dashboard = {
     zettel_tree = "T",
