@@ -3,6 +3,7 @@ local config = require("upsc_notes.config")
 local shortcuts = require("upsc_notes.shortcuts")
 local block_focus = require("upsc_notes.block_focus")
 local selection_translation = require("upsc_notes.selection_translation")
+local explorer_sync = require("upsc_notes.explorer_sync")
 
 local M = {}
 
@@ -79,7 +80,9 @@ function M.setup()
     desc = "Remember the active editor file for sidebar highlighting",
     callback = function(event)
       if is_real_file(event.buf) then
-        vim.t.upsc_active_file = vim.fs.normalize(vim.api.nvim_buf_get_name(event.buf))
+        local path = vim.fs.normalize(vim.api.nvim_buf_get_name(event.buf))
+        vim.t.upsc_active_file = path
+        explorer_sync.reveal(path)
       end
     end,
   })
@@ -167,6 +170,9 @@ function M.setup()
       config.apply_markdown_buffer_options()
       vim.opt_local.formatoptions:remove({ "t", "c", "r", "o" })
       actions.set_read_mode({ notify = false })
+      if config.get().markdown.block_focus then
+        block_focus.enable({ notify = false })
+      end
 
       vim.keymap.set("n", "<cr>", "<cmd>ObsidianFollowLink<cr>", {
         buffer = true,

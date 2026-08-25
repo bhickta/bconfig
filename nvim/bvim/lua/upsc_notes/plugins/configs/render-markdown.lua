@@ -1,7 +1,8 @@
 local icons = require("upsc_notes.astroui.icons")
+local config = require("upsc_notes.config").get()
 
 return {
-  enabled = true,
+  enabled = config.markdown.render,
   preset = "obsidian",
   render_modes = { "n", "c", "t" },
   max_file_size = 8.0,
