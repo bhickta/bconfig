@@ -119,6 +119,7 @@ function M.global(actions)
     map("n", "<leader>mo", command("ObsidianQuickSwitch"), "Obsidian quick switch"),
     map("n", "<leader>ms", command("ObsidianSearch"), "Obsidian search"),
     map("n", "<leader>mn", command("ObsidianNew"), "New note in in"),
+    map("v", "<leader>mh", require("upsc_notes.selection_translation").translate_selection, "Translate selection to Hindi"),
 
     map("n", "gd", command("ObsidianFollowLink"), "Follow Obsidian link"),
     map("n", "]w", actions.jump_to_next_wikilink, "Next wiki link"),
@@ -130,6 +131,7 @@ function M.global(actions)
     map("n", "<leader>rs", actions.toggle_study_mode, "Toggle study mode"),
     map("n", "<leader>rm", actions.toggle_markdown_render, "Toggle markdown render"),
     map("n", "<leader>rt", require("upsc_notes.reading_time").cycle_mode, "Cycle reading speed"),
+    map("n", "<leader>rh", require("upsc_notes.selection_translation").toggle, "Toggle Hindi translation"),
     map("n", "<leader>rf", require("upsc_notes.block_focus").toggle, "Toggle block focus"),
 
     map("n", "<leader>pi", command("Lazy install"), "Plugins install"),

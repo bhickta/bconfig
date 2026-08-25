@@ -3,6 +3,7 @@ local config = require("upsc_notes.config")
 local paths = require("upsc_notes.paths")
 local reading_time = require("upsc_notes.reading_time")
 local block_focus = require("upsc_notes.block_focus")
+local selection_translation = require("upsc_notes.selection_translation")
 
 local M = {}
 
@@ -68,6 +69,8 @@ function M.setup()
   create_command("BlockFocus", block_focus.enable)
   create_command("BlockFocusOff", block_focus.disable)
   create_command("ToggleBlockFocus", block_focus.toggle)
+  create_command("TranslateVisual", selection_translation.translate_selection, { range = true })
+  create_command("ToggleSelectionTranslation", selection_translation.toggle)
 end
 
 return M

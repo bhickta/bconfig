@@ -24,6 +24,8 @@ local function test_defaults()
   assert_eq(cfg.paths.in_root, "/home/bhickta/development/upsc/in", "default in path")
   assert_eq(cfg.reading.default_speed, "xfast", "default reading speed")
   assert_eq(cfg.reading.speeds.xfast, 500, "xfast words per minute")
+  assert_eq(cfg.translation.enabled, true, "visual translation enabled")
+  assert_eq(cfg.translation.target_lang, "hi", "Hindi translation target")
 end
 
 local function test_user_overrides()

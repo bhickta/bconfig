@@ -60,6 +60,13 @@ local function default_config()
         xfast = 500,
       },
     },
+    translation = {
+      enabled = true,
+      delay_ms = 500,
+      executable = "curl",
+      source_lang = "auto",
+      target_lang = "hi",
+    },
   }
 end
 
@@ -95,6 +102,7 @@ function M.validate(cfg)
     picker = { cfg.picker, "table" },
     markdown = { cfg.markdown, "table" },
     reading = { cfg.reading, "table" },
+    translation = { cfg.translation, "table" },
   })
 
   vim.validate({
@@ -104,7 +112,20 @@ function M.validate(cfg)
     ["vault.in_dir"] = { cfg.vault.in_dir, "string" },
     ["reading.default_speed"] = { cfg.reading.default_speed, "string" },
     ["reading.speeds"] = { cfg.reading.speeds, "table" },
+    ["translation.enabled"] = { cfg.translation.enabled, "boolean" },
+    ["translation.delay_ms"] = { cfg.translation.delay_ms, "number" },
+    ["translation.executable"] = { cfg.translation.executable, "string" },
+    ["translation.source_lang"] = { cfg.translation.source_lang, "string" },
+    ["translation.target_lang"] = { cfg.translation.target_lang, "string" },
   })
+
+  if cfg.translation.delay_ms < 0 then
+    error("upsc_notes.config: translation.delay_ms must not be negative")
+  end
+
+  if cfg.translation.executable == "" or cfg.translation.source_lang == "" or cfg.translation.target_lang == "" then
+    error("upsc_notes.config: translation executable and languages must not be empty")
+  end
 
   if type(cfg.reading.speeds[cfg.reading.default_speed]) ~= "number" then
     error("upsc_notes.config: reading.default_speed must name a configured reading speed")

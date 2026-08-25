@@ -51,6 +51,8 @@ for _, mode in ipairs({ "n", "t" }) do
 end
 
 assert_has_global("n", "<leader>rf")
+assert_has_global("n", "<leader>rh")
+assert_has_global("v", "<leader>mh")
 
 assert_unique(shortcuts.dashboard_buttons({
   dashboard = {

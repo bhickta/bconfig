@@ -24,6 +24,8 @@ local expected_commands = {
   "BlockFocus",
   "BlockFocusOff",
   "ToggleBlockFocus",
+  "TranslateVisual",
+  "ToggleSelectionTranslation",
 }
 
 for _, command in ipairs(expected_commands) do
