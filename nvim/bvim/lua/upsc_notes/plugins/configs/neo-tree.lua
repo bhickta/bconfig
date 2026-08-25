@@ -2,6 +2,8 @@ local icons = require("upsc_notes.astroui.icons")
 
 local M = {}
 
+local active_line_namespace = vim.api.nvim_create_namespace("UpscNeoTreeCurrentLine")
+
 local function active_file_path()
   local path = vim.t.upsc_active_file
   return type(path) == "string" and path ~= "" and path or nil
@@ -23,6 +25,33 @@ local function focused_component(name)
     end
     return component
   end
+end
+
+local function highlight_active_file_line(state)
+  if
+    state.name ~= "filesystem"
+    or not state.bufnr
+    or not vim.api.nvim_buf_is_valid(state.bufnr)
+    or not state.tree
+  then
+    return
+  end
+
+  vim.api.nvim_buf_clear_namespace(state.bufnr, active_line_namespace, 0, -1)
+  local path = active_file_path()
+  if not path then
+    return
+  end
+
+  local ok, node, line_number = pcall(state.tree.get_node, state.tree, path)
+  if not ok or not node or not line_number then
+    return
+  end
+
+  vim.api.nvim_buf_set_extmark(state.bufnr, active_line_namespace, line_number - 1, 0, {
+    line_hl_group = "UpscNeoTreeCurrentLine",
+    priority = 50,
+  })
 end
 
 local function collect_files(root)
@@ -539,6 +568,11 @@ function M.opts()
       },
     },
     event_handlers = {
+      {
+        event = "after_render",
+        id = "upsc_current_file_line",
+        handler = highlight_active_file_line,
+      },
       {
         event = "neo_tree_buffer_enter",
         handler = function()

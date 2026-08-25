@@ -121,6 +121,7 @@ function M.apply()
   set("NeoTreeFileName", { fg = colors.fg })
   set("NeoTreeFileNameOpened", { fg = colors.peach, bold = true })
   set("UpscNeoTreeCurrentFile", { fg = colors.bg, bg = colors.peach, bold = true })
+  set("UpscNeoTreeCurrentLine", { bg = colors.bg_line })
   set("NeoTreeCursorLine", { bg = colors.bg_line })
   set("NeoTreeRootName", { fg = colors.mauve, bold = true })
 
