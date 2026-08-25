@@ -30,6 +30,27 @@ local function tree_filter()
   end
 end
 
+local function selected_tree_file()
+  local win = status_win()
+  if not vim.api.nvim_win_is_valid(win) then
+    return nil
+  end
+  local buf = vim.api.nvim_win_get_buf(win)
+  if vim.bo[buf].filetype ~= "neo-tree" then
+    return nil
+  end
+
+  local ok, state = pcall(require("neo-tree.sources.manager").get_state_for_window, win)
+  if not ok or not state or not state.tree then
+    return nil
+  end
+  local node_ok, node = pcall(state.tree.get_node, state.tree)
+  if not node_ok or not node or node.type ~= "file" then
+    return nil
+  end
+  return node.path or node:get_id()
+end
+
 local mode = {
   provider = function()
     return " " .. vim.api.nvim_get_mode().mode:upper() .. " "
@@ -146,6 +167,17 @@ local reading_time = {
   update = { "TextChanged", "TextChangedI", "BufEnter", "BufWritePost" },
 }
 
+local folder_reading_time = {
+  condition = function()
+    return selected_tree_file() ~= nil
+  end,
+  provider = function()
+    return require("upsc_notes.folder_reading_time").status(selected_tree_file())
+  end,
+  hl = { fg = colors.green, bg = colors.bg_alt },
+  update = { "CursorMoved", "BufEnter", "BufWritePost" },
+}
+
 local bufferline = {
   condition = function()
     return #vim.fn.getbufinfo({ buflisted = 1 }) > 1
@@ -229,6 +261,7 @@ function M.setup()
       align,
       filetype,
       reading_time,
+      folder_reading_time,
       location,
       progress,
     },
