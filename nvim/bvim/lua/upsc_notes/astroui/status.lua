@@ -123,6 +123,23 @@ local progress = {
   hl = { fg = colors.green, bg = colors.bg_alt },
 }
 
+local reading_time = {
+  condition = function()
+    local win = status_win()
+    if not vim.api.nvim_win_is_valid(win) then
+      return false
+    end
+    local buf = vim.api.nvim_win_get_buf(win)
+    return vim.bo[buf].filetype == "markdown" and vim.bo[buf].buftype == ""
+  end,
+  provider = function()
+    local buf = vim.api.nvim_win_get_buf(status_win())
+    return require("upsc_notes.reading_time").status(buf)
+  end,
+  hl = { fg = colors.green, bg = colors.bg_alt },
+  update = { "TextChanged", "TextChangedI", "BufEnter", "BufWritePost" },
+}
+
 local bufferline = {
   condition = function()
     return #vim.fn.getbufinfo({ buflisted = 1 }) > 1
@@ -201,6 +218,7 @@ function M.setup()
       diagnostics,
       align,
       filetype,
+      reading_time,
       location,
       progress,
     },

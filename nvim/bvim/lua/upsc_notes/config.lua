@@ -52,6 +52,13 @@ local function default_config()
       disabled_conceallevel = 1,
       enabled_concealcursor = "nc",
       disabled_concealcursor = "",
+      default_speed = "xfast",
+      speeds = {
+        slow = 150,
+        medium = 250,
+        fast = 350,
+        xfast = 500,
+      },
     },
   }
 end
@@ -95,7 +102,20 @@ function M.validate(cfg)
     ["vault.root"] = { cfg.vault.root, "string" },
     ["vault.zettel_dir"] = { cfg.vault.zettel_dir, "string" },
     ["vault.in_dir"] = { cfg.vault.in_dir, "string" },
+    ["reading.default_speed"] = { cfg.reading.default_speed, "string" },
+    ["reading.speeds"] = { cfg.reading.speeds, "table" },
   })
+
+  if type(cfg.reading.speeds[cfg.reading.default_speed]) ~= "number" then
+    error("upsc_notes.config: reading.default_speed must name a configured reading speed")
+  end
+
+  for _, mode in ipairs({ "slow", "medium", "fast", "xfast" }) do
+    local words_per_minute = cfg.reading.speeds[mode]
+    if type(words_per_minute) ~= "number" or words_per_minute <= 0 then
+      error(("upsc_notes.config: reading.speeds.%s must be a positive number"):format(mode))
+    end
+  end
 
   if cfg.vault.root == "" then
     error("upsc_notes.config: vault.root must not be empty")

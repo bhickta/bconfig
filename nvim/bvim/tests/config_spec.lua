@@ -22,6 +22,8 @@ local function test_defaults()
   assert_eq(cfg.paths.vault_root, "/home/bhickta/development/upsc", "default vault root")
   assert_eq(cfg.paths.zettel_root, "/home/bhickta/development/upsc/zettelkasten", "default zettel path")
   assert_eq(cfg.paths.in_root, "/home/bhickta/development/upsc/in", "default in path")
+  assert_eq(cfg.reading.default_speed, "xfast", "default reading speed")
+  assert_eq(cfg.reading.speeds.xfast, 500, "xfast words per minute")
 end
 
 local function test_user_overrides()

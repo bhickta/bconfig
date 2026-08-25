@@ -19,6 +19,8 @@ local expected_commands = {
   "StudyModeOff",
   "ToggleStudyMode",
   "MarkdownRenderToggle",
+  "ReadingSpeed",
+  "ReadingSpeedCycle",
 }
 
 for _, command in ipairs(expected_commands) do

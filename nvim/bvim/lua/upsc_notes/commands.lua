@@ -1,6 +1,7 @@
 local actions = require("upsc_notes.actions")
 local config = require("upsc_notes.config")
 local paths = require("upsc_notes.paths")
+local reading_time = require("upsc_notes.reading_time")
 
 local M = {}
 
@@ -54,6 +55,15 @@ function M.setup()
   create_command("StudyModeOff", actions.disable_study_mode)
   create_command("ToggleStudyMode", actions.toggle_study_mode)
   create_command("MarkdownRenderToggle", actions.toggle_markdown_render)
+  create_command("ReadingSpeed", function(opts)
+    reading_time.set_mode(opts.args)
+  end, {
+    nargs = 1,
+    complete = function(arg_lead)
+      return vim.tbl_filter(function(mode) return vim.startswith(mode, arg_lead:lower()) end, reading_time.modes)
+    end,
+  })
+  create_command("ReadingSpeedCycle", reading_time.cycle_mode)
 end
 
 return M
