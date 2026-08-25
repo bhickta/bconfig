@@ -74,6 +74,16 @@ function M.setup()
     end,
   })
 
+  vim.api.nvim_create_autocmd("BufEnter", {
+    group = group,
+    desc = "Remember the active editor file for sidebar highlighting",
+    callback = function(event)
+      if is_real_file(event.buf) then
+        vim.t.upsc_active_file = vim.fs.normalize(vim.api.nvim_buf_get_name(event.buf))
+      end
+    end,
+  })
+
   vim.api.nvim_create_autocmd("BufWinEnter", {
     group = group,
     desc = "Let q close utility windows",

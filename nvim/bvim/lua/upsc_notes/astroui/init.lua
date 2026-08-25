@@ -120,6 +120,7 @@ function M.apply()
   set("NeoTreeDirectoryIcon", { fg = colors.blue })
   set("NeoTreeFileName", { fg = colors.fg })
   set("NeoTreeFileNameOpened", { fg = colors.peach, bold = true })
+  set("UpscNeoTreeCurrentFile", { fg = colors.bg, bg = colors.peach, bold = true })
   set("NeoTreeCursorLine", { bg = colors.bg_line })
   set("NeoTreeRootName", { fg = colors.mauve, bold = true })
 

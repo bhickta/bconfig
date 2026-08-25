@@ -2,6 +2,29 @@ local icons = require("upsc_notes.astroui.icons")
 
 local M = {}
 
+local function active_file_path()
+  local path = vim.t.upsc_active_file
+  return type(path) == "string" and path ~= "" and path or nil
+end
+
+local function is_active_file(node)
+  if node.type ~= "file" or not active_file_path() then
+    return false
+  end
+  local path = node.path or node:get_id()
+  return path and vim.fs.normalize(path) == active_file_path()
+end
+
+local function focused_component(name)
+  return function(config, node, state)
+    local component = require("neo-tree.sources.common.components")[name](config, node, state)
+    if is_active_file(node) then
+      component.highlight = "UpscNeoTreeCurrentFile"
+    end
+    return component
+  end
+end
+
 local function collect_files(root)
   local files = {}
   local uv = vim.uv or vim.loop
@@ -438,13 +461,17 @@ function M.opts()
     },
     filesystem = {
       bind_to_cwd = false,
+      components = {
+        icon = focused_component("icon"),
+        name = focused_component("name"),
+      },
       commands = {
         open = open_node,
         open_split = open_node_split,
         open_vsplit = open_node_vsplit,
         open_tabnew = open_node_tabnew,
       },
-      follow_current_file = { enabled = true },
+      follow_current_file = { enabled = true, leave_dirs_open = false },
       filtered_items = {
         visible = true,
         hide_dotfiles = false,
