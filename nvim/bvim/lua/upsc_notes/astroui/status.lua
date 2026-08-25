@@ -185,16 +185,20 @@ local winbar = {
   },
 }
 
+function M.relative_line_number(relative_number, virtual_number)
+  if virtual_number ~= 0 then
+    return "%="
+  end
+  if relative_number == 0 then
+    return "%#CursorLineNr#0 "
+  end
+  return "%#LineNr#" .. relative_number .. " "
+end
+
 local statuscolumn = {
   {
     provider = function()
-      if vim.v.virtnum ~= 0 then
-        return "%="
-      end
-      if vim.v.relnum == 0 then
-        return "%#CursorLineNr#%l "
-      end
-      return "%#LineNr#%r "
+      return M.relative_line_number(vim.v.relnum, vim.v.virtnum)
     end,
   },
   {

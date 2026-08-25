@@ -472,8 +472,8 @@ function M.jump_to_prev_wikilink()
 end
 
 local function set_reading_window(enabled)
-  vim.wo.number = true
-  vim.wo.relativenumber = not enabled
+  vim.wo.number = false
+  vim.wo.relativenumber = true
   vim.wo.signcolumn = enabled and "no" or "yes"
   vim.wo.foldcolumn = "0"
   vim.wo.cursorline = not enabled

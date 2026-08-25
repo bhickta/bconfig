@@ -1,7 +1,7 @@
 local M = {}
 
 function M.setup()
-  vim.opt.number = true
+  vim.opt.number = false
   vim.opt.relativenumber = true
   vim.opt.mouse = ""
   vim.opt.backspace = vim.list_extend(vim.opt.backspace:get(), { "nostop" })
