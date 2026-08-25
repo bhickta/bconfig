@@ -4,6 +4,7 @@ local shortcuts = require("upsc_notes.shortcuts")
 local block_focus = require("upsc_notes.block_focus")
 local selection_translation = require("upsc_notes.selection_translation")
 local explorer_sync = require("upsc_notes.explorer_sync")
+local web_lookup = require("upsc_notes.web_lookup")
 
 local M = {}
 
@@ -25,6 +26,7 @@ end
 function M.setup()
   local group = vim.api.nvim_create_augroup("UpscNotesAutocmds", { clear = true })
   selection_translation.setup(group)
+  web_lookup.setup(group)
 
   vim.api.nvim_create_autocmd("TextYankPost", {
     group = group,
