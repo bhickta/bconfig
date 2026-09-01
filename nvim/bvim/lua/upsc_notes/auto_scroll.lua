@@ -82,9 +82,7 @@ local function schedule_current_line()
     end
 
     vim.api.nvim_win_set_cursor(current_session.win, { line_number + 1, 0 })
-    vim.api.nvim_win_call(current_session.win, function()
-      vim.cmd("normal! zz")
-    end)
+    require("upsc_notes.viewport_focus").place(current_session.win)
     vim.cmd.redrawstatus()
     schedule_current_line()
   end

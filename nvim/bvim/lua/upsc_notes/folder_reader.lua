@@ -388,7 +388,7 @@ local function move_section(direction)
   end
 
   vim.api.nvim_win_set_cursor(0, { target.heading_line, 0 })
-  vim.cmd("normal! zz")
+  require("upsc_notes.viewport_focus").place(vim.api.nvim_get_current_win())
 end
 
 function M.open_source()
@@ -403,7 +403,7 @@ function M.open_source()
   local source_line = math.max(1, math.min(section.source_line_count, cursor_line - section.content_start + 1))
   vim.cmd("edit " .. vim.fn.fnameescape(section.path))
   vim.api.nvim_win_set_cursor(0, { source_line, 0 })
-  vim.cmd("normal! zz")
+  require("upsc_notes.viewport_focus").place(vim.api.nvim_get_current_win())
 end
 
 local function configure_buffer(buf)

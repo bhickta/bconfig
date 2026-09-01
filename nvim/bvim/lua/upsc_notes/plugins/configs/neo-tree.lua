@@ -325,8 +325,9 @@ local function open_node_with_cmd(state, open_cmd)
   if pos then
     vim.api.nvim_win_set_cursor(0, { (pos[1] or 0) + 1, pos[2] or 0 })
     vim.api.nvim_win_call(0, function()
-      vim.cmd("normal! zvzz")
+      vim.cmd("normal! zv")
     end)
+    require("upsc_notes.viewport_focus").place(vim.api.nvim_get_current_win())
   end
 end
 

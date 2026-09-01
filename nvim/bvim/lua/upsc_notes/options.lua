@@ -35,8 +35,7 @@ function M.setup()
   vim.opt.winborder = "rounded"
   vim.opt.writebackup = false
   vim.opt.grepprg = "rg --vimgrep --smart-case"
-  -- Keep the active line centered while moving through file buffers.
-  vim.opt.scrolloff = 999
+  vim.opt.scrolloff = 0
   vim.opt.sidescrolloff = 12
   vim.opt.showmode = false
   vim.opt.showtabline = 2

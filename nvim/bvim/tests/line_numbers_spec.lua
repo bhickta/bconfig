@@ -11,7 +11,7 @@ end
 require("upsc_notes.options").setup()
 assert_eq(vim.wo.number, false, "absolute numbers are disabled by default")
 assert_eq(vim.wo.relativenumber, true, "relative numbers are enabled by default")
-assert_eq(vim.wo.scrolloff, 999, "the active file line remains vertically centered while scrolling")
+assert_eq(vim.wo.scrolloff, 0, "viewport focus controls the active line position")
 
 local status = require("upsc_notes.astroui.status")
 assert_eq(status.relative_line_number(0, 0), "%#CursorLineNr#0 ", "current line displays zero")
