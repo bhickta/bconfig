@@ -51,6 +51,13 @@ function M.setup()
   create_command("Ingrep", actions.grep_in)
   create_command("ScopeFiles", actions.find_scope_file)
   create_command("ScopeGrep", actions.grep_scope)
+  create_command("ReadFolder", function(opts)
+    if opts.args == "" then
+      actions.read_current_folder()
+    else
+      actions.read_folder(opts.args)
+    end
+  end, { nargs = "?", complete = "dir" })
   create_command("PickerResume", actions.resume_picker)
   create_command("ReadMode", actions.set_read_mode)
   create_command("EditMode", actions.set_edit_mode)

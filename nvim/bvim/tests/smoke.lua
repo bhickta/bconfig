@@ -7,6 +7,7 @@ local expected_commands = {
   "Ztree",
   "InTree",
   "RevealNote",
+  "ReadFolder",
   "Zgrep",
   "Ingrep",
   "ScopeFiles",

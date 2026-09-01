@@ -30,6 +30,7 @@ end
 local expected = {
   ["<leader>fS"] = "find_folder_files",
   ["<leader>f/"] = "grep_folder",
+  gr = "read_folder",
 }
 
 for lhs, command in pairs(expected) do
@@ -49,6 +50,9 @@ package.loaded["upsc_notes.actions"] = {
   end,
   grep_folder = function(dir)
     captured.grep = dir
+  end,
+  read_folder = function(dir)
+    captured.read = dir
   end,
 }
 
@@ -80,6 +84,11 @@ node = {
 opts.commands.grep_folder(state)
 if captured.grep ~= "/notes/active/subfolder" then
   error("folder grep should use a selected file's parent directory")
+end
+
+opts.commands.read_folder(state)
+if captured.read ~= "/notes/active/subfolder" then
+  error("folder reader should use a selected file's parent directory")
 end
 
 local opened = false

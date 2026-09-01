@@ -59,6 +59,12 @@ The update command:
 
 Only committed and pushed files in this repository are synchronized. Credentials, editor history, caches, notes, and other machine-local state remain local. Set `UPSC_NOTES_VAULT` on a machine only when its notes directory is not `~/development/upsc`.
 
+### Reading a folder as one document
+
+In bvim, use `Space m r` or `:ReadFolder [path]` to combine every Markdown file below a folder into one read-only reading view. From Neo-tree, select a folder or one of its files and press `g r`.
+
+Inside the combined view, use `] f` / `[ f` for the next or previous note, `g f` to open the source note at the corresponding line, `R` to refresh, and `q` to close. Files remain separate on disk; the combined buffer is only a reading view.
+
 For an offline relink that does not restore plugins, use:
 
 ```sh

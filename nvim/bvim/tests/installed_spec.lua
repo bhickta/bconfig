@@ -2,6 +2,7 @@ local expected_commands = {
   "Dashboard",
   "FocusTree",
   "RevealNote",
+  "ReadFolder",
   "ToggleReadEdit",
 }
 

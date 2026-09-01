@@ -252,6 +252,14 @@ function M.grep_folder(dir)
   grep({ cwd = dir, title = "Grep " .. vim.fn.fnamemodify(dir, ":t") })
 end
 
+function M.read_folder(dir)
+  require("upsc_notes.folder_reader").open(dir)
+end
+
+function M.read_current_folder()
+  M.read_folder(current_scope_dir())
+end
+
 function M.resume_picker()
   local picker = snacks_picker()
   if picker then
