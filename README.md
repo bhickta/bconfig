@@ -75,7 +75,7 @@ Block focus preserves context for nested points: when the cursor is on a child o
 
 The bottom-right statusline shows `Ln current/total Col column`, so the total number of lines remains visible in normal notes and combined folder views.
 
-File scrolling keeps the cursor line about 30% from the top of the window whenever the document has enough preceding lines. Neo-tree retains normal list scrolling.
+File scrolling keeps the cursor line about 20% from the top of the window whenever the document has enough preceding lines. Neo-tree retains normal list scrolling.
 
 For an offline relink that does not restore plugins, use:
 

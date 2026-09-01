@@ -1,6 +1,6 @@
 local M = {}
 
-local focus_ratio = 0.30
+local focus_ratio = 0.20
 local last_views = {}
 local repositioning = {}
 local scroll_up = vim.api.nvim_replace_termcodes("<C-y>", true, false, true)
@@ -70,7 +70,7 @@ function M.setup()
   local group = vim.api.nvim_create_augroup("UpscViewportFocus", { clear = true })
   vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI", "BufEnter", "WinEnter" }, {
     group = group,
-    desc = "Keep the active file line thirty percent from the top",
+    desc = "Keep the active file line twenty percent from the top",
     callback = function()
       M.place(vim.api.nvim_get_current_win())
     end,
