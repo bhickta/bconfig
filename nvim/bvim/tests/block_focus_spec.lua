@@ -9,22 +9,28 @@ local function assert_eq(actual, expected, message)
 end
 
 local lines = {
-  "root",
-  "  child",
+  "- root",
+  "  - child",
   "",
-  "    grandchild",
-  "sibling",
-  "  sibling child",
+  "    - grandchild",
+  "- sibling",
+  "  - sibling child",
 }
 
 local first, last = block_focus.block_range(lines, 1)
 assert_eq({ first, last }, { 1, 4 }, "root includes its indented block")
 
 first, last = block_focus.block_range(lines, 2)
-assert_eq({ first, last }, { 2, 4 }, "child includes blank and deeper lines")
+assert_eq({ first, last }, { 1, 4 }, "child keeps its complete parent branch focused")
+
+first, last = block_focus.block_range(lines, 4)
+assert_eq({ first, last }, { 1, 4 }, "grandchild keeps every ancestor and the complete branch focused")
 
 first, last = block_focus.block_range(lines, 5)
 assert_eq({ first, last }, { 5, 6 }, "next sibling starts a new block")
+
+first, last = block_focus.block_range(lines, 6)
+assert_eq({ first, last }, { 5, 6 }, "a child in the next branch focuses that branch's parent")
 
 first, last = block_focus.block_range(lines, 3)
 assert_eq({ first, last }, { 3, 3 }, "blank line focuses itself")

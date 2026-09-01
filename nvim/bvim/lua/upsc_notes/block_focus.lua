@@ -21,16 +21,29 @@ function M.block_range(lines, cursor_line)
     return cursor_line, cursor_line
   end
 
-  local block_end = cursor_line
-  for line_number = cursor_line + 1, #lines do
+  local block_start = cursor_line
+  local parent_indent = base_indent
+  for line_number = cursor_line - 1, 1, -1 do
     local line_indent = indentation(lines[line_number])
-    if line_indent and line_indent <= base_indent then
+    if line_indent and line_indent < parent_indent then
+      block_start = line_number
+      parent_indent = line_indent
+      if parent_indent == 0 then
+        break
+      end
+    end
+  end
+
+  local block_end = block_start
+  for line_number = block_start + 1, #lines do
+    local line_indent = indentation(lines[line_number])
+    if line_indent and line_indent <= parent_indent then
       break
     end
     block_end = line_number
   end
 
-  return cursor_line, block_end
+  return block_start, block_end
 end
 
 function M.is_enabled(buf)

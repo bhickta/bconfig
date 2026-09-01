@@ -69,6 +69,8 @@ Inside the combined view, use `] f` / `[ f` for the next or previous note, `g f`
 
 The combined view supports the normal Markdown reading features, including rendered Markdown, total/remaining reading time, reading-speed controls, auto-scroll, block focus, selection translation, zen mode, and explorer split navigation. It stays read-only; use `g f` before editing source content.
 
+Block focus preserves context for nested points: when the cursor is on a child or deeper item, its top-level parent branch and descendants remain focused together.
+
 The bottom-right statusline shows `Ln current/total Col column`, so the total number of lines remains visible in normal notes and combined folder views.
 
 File scrolling keeps the cursor line centered vertically whenever the document has enough surrounding lines. Neo-tree retains normal list scrolling.
