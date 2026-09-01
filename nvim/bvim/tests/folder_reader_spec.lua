@@ -14,22 +14,23 @@ vim.fn.mkdir(root .. "/nested", "p")
 vim.fn.mkdir(root .. "/.git", "p")
 vim.fn.writefile({ "# Alpha", "one two" }, root .. "/01-alpha.md")
 vim.fn.writefile({ "# Beta", "three four five" }, root .. "/02-beta.MD")
-vim.fn.writefile({ "# Nested", "must not appear" }, root .. "/nested/03-nested.md")
+vim.fn.writefile({ "# Nested", "must also appear" }, root .. "/nested/03-nested.md")
 vim.fn.writefile({ "ignored" }, root .. "/notes.txt")
 vim.fn.writefile({ "hidden" }, root .. "/.git/hidden.md")
 
 assert_eq(
   vim.tbl_map(function(path) return path:sub(#root + 2) end, reader.markdown_files(root)),
-  { "01-alpha.md", "02-beta.MD" },
-  "folder reader should collect only Markdown files directly inside the focused folder"
+  { "01-alpha.md", "02-beta.MD", "nested/03-nested.md" },
+  "folder reader should recursively collect Markdown files and skip metadata directories"
 )
 
 local document = reader.compose(root)
-assert_eq(document.file_count, 2, "combined document file count")
-assert_eq(document.words, 9, "combined document word count")
-assert_eq(#document.sections, 2, "combined document sections")
+assert_eq(document.file_count, 3, "combined document file count")
+assert_eq(document.words, 14, "combined document word count")
+assert_eq(#document.sections, 3, "combined document sections")
 assert_eq(document.sections[1].relative_path, "01-alpha.md", "first section label")
 assert_eq(document.sections[2].relative_path, "02-beta.MD", "second section label")
+assert_eq(document.sections[3].relative_path, "nested/03-nested.md", "nested section label")
 assert_eq(
   reader.section_at(document.sections, document.sections[2].content_start).path,
   vim.fs.normalize(root .. "/02-beta.MD"),
@@ -64,13 +65,13 @@ for lhs, description in pairs({
 end
 
 local folder_buf = buf
-local second = vim.b[buf].upsc_folder_reader_sections[2]
-vim.api.nvim_win_set_cursor(0, { second.content_start + 1, 0 })
+local nested = vim.b[buf].upsc_folder_reader_sections[3]
+vim.api.nvim_win_set_cursor(0, { nested.content_start + 1, 0 })
 reader.open_source()
 assert_eq(
   vim.fs.normalize(vim.api.nvim_buf_get_name(0)),
-  vim.fs.normalize(root .. "/02-beta.MD"),
-  "opening a combined section should edit its source note"
+  vim.fs.normalize(root .. "/nested/03-nested.md"),
+  "opening a nested combined section should edit its source note"
 )
 assert_eq(vim.api.nvim_win_get_cursor(0)[1], 2, "source note should open at the corresponding content line")
 

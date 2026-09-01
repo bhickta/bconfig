@@ -61,7 +61,7 @@ Only committed and pushed files in this repository are synchronized. Credentials
 
 ### Reading a folder as one document
 
-In bvim, focus a folder in Neo-tree with `.`, then use `Space m r` to combine the `.md` files directly inside that focused folder into one read-only reading view. You can also press `g r` in Neo-tree or use `:ReadFolder [path]`. Subfolders are not included.
+In bvim, focus a folder in Neo-tree with `.`, then use `Space m r` to combine its `.md` files into one read-only reading view. You can also press `g r` in Neo-tree or use `:ReadFolder [path]`. Markdown files in subfolders are included recursively and labeled with their relative paths; repository and trash metadata folders are skipped.
 
 Inside the combined view, use `] f` / `[ f` for the next or previous note, `g f` to open the source note at the corresponding line, `R` to refresh, and `q` to close. Files remain separate on disk; the combined buffer is only a reading view.
 
