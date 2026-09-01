@@ -14,12 +14,20 @@ end
 
 local expected_shortcuts = {
   n = {
+    ["<C-,>"] = "Move to left split",
     ["<C-lt>"] = "Move to left split",
+    ["<C-h>"] = "Move to left split",
+    ["<C-.>"] = "Move to right split",
     ["<C->>"] = "Move to right split",
+    ["<C-l>"] = "Move to right split",
   },
   t = {
+    ["<C-,>"] = "Move to left split",
     ["<C-lt>"] = "Move to left split",
+    ["<C-h>"] = "Move to left split",
+    ["<C-.>"] = "Move to right split",
     ["<C->>"] = "Move to right split",
+    ["<C-l>"] = "Move to right split",
   },
 }
 
