@@ -28,7 +28,7 @@ local function default_config()
     min_nvim_label = "0.12+",
     vault = {
       name = "upsc",
-      root = vim.env.UPSC_NOTES_VAULT or "/home/bhickta/development/upsc",
+      root = vim.env.UPSC_NOTES_VAULT or vim.fn.expand("~/development/upsc"),
       zettel_dir = "zettelkasten",
       in_dir = "in",
     },

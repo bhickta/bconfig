@@ -27,20 +27,43 @@ This installs and links:
 - `nvim` - the normal/default Neovim command, synced at `~/.config/nvim` without an `init.lua`
 - `codex` - portable Codex config files under `~/.codex`
 
-After pulling this repo on another PC, run:
+After cloning this repo on another PC, run:
 
 ```sh
 ./scripts/install.sh
 ```
 
-If that PC already has local config files and you want this repo to replace them:
+If a managed path already contains a local file or directory, the installer moves it to a timestamped directory under `~/.local/state/bconfig/backups/` before creating the link. To explicitly replace conflicts without making backups:
 
 ```sh
 BCONFIG_FORCE=1 ./scripts/install.sh
 ```
 
 Codex authentication, logs, history, sessions, caches, and SQLite state are intentionally not tracked. Sign in to Codex separately on each PC.
-The tracked Codex config expects `headroom` and `tokensave` to be installed on `PATH` if you want the same MCP and hook behavior.
+
+## Updating another PC
+
+Commit and push changes from the source PC first. Then run this from the checkout on every other PC:
+
+```sh
+./scripts/install.sh --update
+```
+
+The update command:
+
+- refuses to overwrite uncommitted tracked changes
+- pulls the current branch with `--ff-only`
+- refreshes all managed symlinks and launchers
+- restores bvim and avim plugins to the commits in their `lazy-lock.json` files
+- verifies that bvim loaded the managed commands and shortcuts, including `Ctrl+<` and `Ctrl+>`
+
+Only committed and pushed files in this repository are synchronized. Credentials, editor history, caches, notes, and other machine-local state remain local. Set `UPSC_NOTES_VAULT` on a machine only when its notes directory is not `~/development/upsc`.
+
+For an offline relink that does not restore plugins, use:
+
+```sh
+BCONFIG_SKIP_PLUGIN_RESTORE=1 ./scripts/install.sh
+```
 
 To only refresh managed dotfile links:
 
@@ -48,7 +71,7 @@ To only refresh managed dotfile links:
 ./symlink-setup.sh
 ```
 
-If a real file or directory already exists at a target path, the script refuses to replace it unless `BCONFIG_FORCE=1` is set.
+Missing optional source files (currently `codex/AGENTS.md`) are skipped, so removing one from the repository also removes a symlink previously created for it.
 
 ## Inspiration
 

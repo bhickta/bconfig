@@ -6,7 +6,7 @@ vim.g.maplocalleader = cfg.localleader
 
 if vim.fn.has(cfg.min_nvim) ~= 1 then
   error(
-    ("This config requires Neovim %s. Run /home/bhickta/.local/bin/nvim or restart your shell so ~/.local/bin comes before /usr/bin."):format(
+    ("This config requires Neovim %s. Run ~/.local/bin/nvim or restart your shell so ~/.local/bin comes before /usr/bin."):format(
       cfg.min_nvim_label
     )
   )

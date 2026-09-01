@@ -2,6 +2,7 @@ package.path = vim.fn.getcwd() .. "/lua/?.lua;" .. vim.fn.getcwd() .. "/lua/?/in
 
 local config = require("upsc_notes.config")
 local original_env = vim.env.UPSC_NOTES_VAULT
+local default_vault = vim.fn.expand("~/development/upsc")
 
 local function reset()
   config._config = nil
@@ -19,9 +20,9 @@ local function test_defaults()
   local cfg = config.setup()
   assert_eq(cfg.leader, " ", "default leader")
   assert_eq(cfg.vault.name, "upsc", "default vault name")
-  assert_eq(cfg.paths.vault_root, "/home/bhickta/development/upsc", "default vault root")
-  assert_eq(cfg.paths.zettel_root, "/home/bhickta/development/upsc/zettelkasten", "default zettel path")
-  assert_eq(cfg.paths.in_root, "/home/bhickta/development/upsc/in", "default in path")
+  assert_eq(cfg.paths.vault_root, default_vault, "default vault root")
+  assert_eq(cfg.paths.zettel_root, default_vault .. "/zettelkasten", "default zettel path")
+  assert_eq(cfg.paths.in_root, default_vault .. "/in", "default in path")
   assert_eq(cfg.reading.default_speed, "slow", "default reading speed")
   assert_eq(cfg.markdown.render, true, "Markdown rendering enabled by default")
   assert_eq(cfg.markdown.block_focus, true, "block focus enabled by default")

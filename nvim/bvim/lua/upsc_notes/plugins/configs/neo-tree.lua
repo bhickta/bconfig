@@ -364,6 +364,7 @@ function M.opts()
     default_component_configs = {
       indent = {
         padding = 0,
+        with_markers = false,
         expander_collapsed = icons.tree.collapsed,
         expander_expanded = icons.tree.expanded,
       },
@@ -389,6 +390,18 @@ function M.opts()
           staged = icons.git.staged,
           conflict = icons.git.conflict,
         },
+      },
+    },
+    renderers = {
+      directory = {
+        { "indent" },
+        { "icon" },
+        { "name" },
+      },
+      file = {
+        { "indent" },
+        { "icon" },
+        { "name" },
       },
     },
     commands = {
@@ -580,6 +593,8 @@ function M.opts()
           vim.opt_local.foldcolumn = "0"
           vim.wo.wrap = true
           vim.wo.linebreak = true
+          vim.wo.breakindent = true
+          vim.wo.breakindentopt = "shift:2"
           vim.wo.sidescrolloff = 0
           vim.wo.statuscolumn = ""
           local ok, state = pcall(require("neo-tree.sources.manager").get_state_for_window)

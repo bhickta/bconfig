@@ -46,8 +46,8 @@ for _, lhs in ipairs({ "]b", "[b", "<S-l>", "<S-h>", "<leader>bb", "<leader>bn",
 end
 
 for _, mode in ipairs({ "n", "t" }) do
-  assert_has_global(mode, "<C-,>")
-  assert_has_global(mode, "<C-.>")
+  assert_has_global(mode, "<C-lt>")
+  assert_has_global(mode, "<C->>")
 end
 
 assert_has_global("n", "<leader>rf")

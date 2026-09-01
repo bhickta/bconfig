@@ -5,6 +5,24 @@ require("upsc_notes.config").setup()
 local opts = require("upsc_notes.plugins.configs.neo-tree").opts()
 local mappings = opts.filesystem.window.mappings
 
+if opts.default_component_configs.indent.with_markers ~= false then
+  error("Neo-tree hierarchy indentation should use spaces so wrapped names stay aligned")
+end
+
+for _, node_type in ipairs({ "directory", "file" }) do
+  local renderer = opts.renderers[node_type]
+  local expected_components = { "indent", "icon", "name" }
+  if #renderer ~= #expected_components then
+    error("Neo-tree rows should only render the name and tree decoration for " .. node_type .. " nodes")
+  end
+
+  for index, component_name in ipairs(expected_components) do
+    if renderer[index][1] ~= component_name then
+      error("unexpected Neo-tree component for " .. node_type .. " nodes: " .. renderer[index][1])
+    end
+  end
+end
+
 if mappings["."] ~= "focus_folder" then
   error("missing Neo-tree forward mapping: . -> focus_folder")
 end
