@@ -19,6 +19,12 @@ vim.fn.writefile({ "ignored" }, root .. "/notes.txt")
 vim.fn.writefile({ "hidden" }, root .. "/.git/hidden.md")
 
 assert_eq(
+  reader.nest_headings({ "# One", "## Two", "###### Six", "```markdown", "# code", "```" }, 2),
+  { "### One", "#### Two", "###### Six", "```markdown", "# code", "```" },
+  "source headings should nest below folder and file headings without changing fenced code"
+)
+
+assert_eq(
   vim.tbl_map(function(path) return path:sub(#root + 2) end, reader.markdown_files(root)),
   { "01-alpha.md", "02-beta.MD", "nested/03-nested.md" },
   "folder reader should recursively collect Markdown files and skip metadata directories"
@@ -31,6 +37,9 @@ assert_eq(#document.sections, 3, "combined document sections")
 assert_eq(document.sections[1].relative_path, "01-alpha.md", "first section label")
 assert_eq(document.sections[2].relative_path, "02-beta.MD", "second section label")
 assert_eq(document.sections[3].relative_path, "nested/03-nested.md", "nested section label")
+assert_eq(vim.tbl_contains(document.lines, "## 03-nested.md"), true, "section headings should show only file names")
+assert_eq(vim.tbl_contains(document.lines, "## nested/03-nested.md"), false, "section headings should hide relative paths")
+assert_eq(vim.tbl_contains(document.lines, "### Nested"), true, "source headings should be nested below file names")
 assert_eq(
   reader.section_at(document.sections, document.sections[2].content_start).path,
   vim.fs.normalize(root .. "/02-beta.MD"),

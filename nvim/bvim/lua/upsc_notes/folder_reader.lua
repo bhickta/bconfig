@@ -73,6 +73,42 @@ local function count_words(lines)
   return words
 end
 
+local function fence_marker(line)
+  return line:match("^%s*(```+)") or line:match("^%s*(~~~+)")
+end
+
+function M.nest_headings(lines, levels)
+  levels = levels or 2
+  local nested = {}
+  local fence_character
+  local fence_length
+
+  for _, line in ipairs(lines) do
+    local marker = fence_marker(line)
+    if marker then
+      local character = marker:sub(1, 1)
+      if not fence_character then
+        fence_character = character
+        fence_length = #marker
+      elseif character == fence_character and #marker >= fence_length then
+        fence_character = nil
+        fence_length = nil
+      end
+      table.insert(nested, line)
+    elseif not fence_character then
+      local indent, hashes, title = line:match("^(%s*)(#+)(%s+.*)$")
+      if hashes and #hashes <= 6 then
+        line = indent .. string.rep("#", math.min(6, #hashes + levels)) .. title
+      end
+      table.insert(nested, line)
+    else
+      table.insert(nested, line)
+    end
+  end
+
+  return nested
+end
+
 function M.compose(root)
   root = vim.fs.normalize(vim.fn.fnamemodify(vim.fn.expand(root), ":p")):gsub("/$", "")
   local files = M.markdown_files(root)
@@ -87,7 +123,8 @@ function M.compose(root)
       table.insert(documents, {
         path = path,
         relative_path = relative_path(root, path),
-        lines = lines,
+        name = vim.fs.basename(path),
+        lines = M.nest_headings(lines, 2),
         words = words,
       })
     end
@@ -110,7 +147,7 @@ function M.compose(root)
   local sections = {}
 
   for _, document in ipairs(documents) do
-    vim.list_extend(lines, { "", "---", "", "## " .. document.relative_path, "" })
+    vim.list_extend(lines, { "", "---", "", "## " .. document.name, "" })
     local content_start = #lines + 1
     vim.list_extend(lines, document.lines)
     table.insert(sections, {
