@@ -1,17 +1,7 @@
 local M = {}
 
-local uv = vim.uv or vim.loop
+local fs = require("upsc_notes.fs")
 local namespace = vim.api.nvim_create_namespace("UpscFolderReader")
-local skipped_directories = {
-  [".git"] = true,
-  [".smart-env"] = true,
-  [".trash"] = true,
-}
-
-local function is_directory(path)
-  local stat = uv.fs_stat(path)
-  return stat and stat.type == "directory"
-end
 
 local function relative_path(root, path)
   local prefix = root .. "/"
@@ -25,39 +15,13 @@ local function directory_parts(path)
 end
 
 function M.markdown_files(root)
-  root = vim.fs.normalize(vim.fn.fnamemodify(vim.fn.expand(root), ":p")):gsub("/$", "")
-  local files = {}
-
-  local function scan(directory)
-    local handle = uv.fs_scandir(directory)
-    if not handle then
-      return
-    end
-
-    while true do
-      local name, kind = uv.fs_scandir_next(handle)
-      if not name then
-        break
-      end
-
-      local path = vim.fs.joinpath(directory, name)
-      if kind == "directory" and not skipped_directories[name] then
-        scan(path)
-      elseif kind == "file" and name:lower():match("%.md$") then
-        table.insert(files, vim.fs.normalize(path))
-      end
-    end
-  end
-
-  scan(root)
-  table.sort(files, function(left, right)
-    local left_relative = relative_path(root, left)
-    local right_relative = relative_path(root, right)
-    local left_folded = left_relative:lower()
-    local right_folded = right_relative:lower()
-    return left_folded == right_folded and left_relative < right_relative or left_folded < right_folded
-  end)
-  return files
+  return fs.collect_files(root, {
+    recursive = true,
+    skipped_directories = fs.metadata_directories,
+    include = function(_, name)
+      return name:lower():match("%.md$") ~= nil
+    end,
+  })
 end
 
 local function file_lines(path)
@@ -422,7 +386,7 @@ end
 
 function M.open(root)
   root = vim.fs.normalize(vim.fn.fnamemodify(vim.fn.expand(root), ":p")):gsub("/$", "")
-  if not is_directory(root) then
+  if not fs.is_directory(root) then
     vim.notify("Folder does not exist: " .. root, vim.log.levels.WARN)
     return
   end

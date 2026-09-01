@@ -1,5 +1,6 @@
 local M = {}
 
+local uv = vim.uv or vim.loop
 local file_cache = {}
 
 local function reading_config()
@@ -7,28 +8,11 @@ local function reading_config()
 end
 
 local function markdown_files(dir)
-  local files = {}
-  local handle = (vim.uv or vim.loop).fs_scandir(dir)
-  if not handle then
-    return files
-  end
-
-  while true do
-    local name, kind = (vim.uv or vim.loop).fs_scandir_next(handle)
-    if not name then
-      break
-    end
-    if kind == "file" and name:lower():match("%.md$") then
-      table.insert(files, vim.fs.joinpath(dir, name))
-    end
-  end
-
-  table.sort(files, function(left, right)
-    local left_name = vim.fs.basename(left):lower()
-    local right_name = vim.fs.basename(right):lower()
-    return left_name == right_name and left < right or left_name < right_name
-  end)
-  return files
+  return require("upsc_notes.fs").collect_files(dir, {
+    include = function(_, name)
+      return name:lower():match("%.md$") ~= nil
+    end,
+  })
 end
 
 function M.files_below(selected_path)
@@ -47,7 +31,7 @@ function M.files_below(selected_path)
 end
 
 local function disk_word_count(path)
-  local stat = (vim.uv or vim.loop).fs_stat(path)
+  local stat = uv.fs_stat(path)
   if not stat then
     return 0
   end

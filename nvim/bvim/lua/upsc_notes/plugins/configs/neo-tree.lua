@@ -55,38 +55,12 @@ local function highlight_active_file_line(state)
 end
 
 local function collect_files(root)
-  local files = {}
-  local uv = vim.uv or vim.loop
-  local skipped_dirs = {
-    [".git"] = true,
-    [".smart-env"] = true,
-    [".trash"] = true,
-  }
-
-  local function scan(dir)
-    local handle = uv.fs_scandir(dir)
-    if not handle then
-      return
-    end
-
-    while true do
-      local name, kind = uv.fs_scandir_next(handle)
-      if not name then
-        break
-      end
-
-      local path = dir .. "/" .. name
-      if kind == "file" then
-        table.insert(files, path)
-      elseif kind == "directory" and not skipped_dirs[name] then
-        scan(path)
-      end
-    end
-  end
-
-  scan(root)
-  table.sort(files)
-  return files
+  local fs = require("upsc_notes.fs")
+  return fs.collect_files(root, {
+    recursive = true,
+    skipped_directories = fs.metadata_directories,
+    compare = function(left, right) return left < right end,
+  })
 end
 
 local function current_tree_state(state)

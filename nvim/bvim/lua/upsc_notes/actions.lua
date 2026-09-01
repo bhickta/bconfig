@@ -1,5 +1,6 @@
 local config = require("upsc_notes.config")
 local paths = require("upsc_notes.paths")
+local fs = require("upsc_notes.fs")
 
 local M = {}
 
@@ -18,25 +19,12 @@ local function edit(path)
   vim.cmd("edit " .. vim.fn.fnameescape(path))
 end
 
-local function is_dir(path)
-  if type(path) ~= "string" or path == "" then
-    return false
-  end
-  local stat = vim.loop.fs_stat(path)
-  return stat and stat.type == "directory"
-end
-
-local function is_file(path)
-  local stat = vim.loop.fs_stat(path)
-  return stat and stat.type == "file"
-end
-
 local function in_vault(path)
-  return path ~= "" and path:find(paths.vault_root, 1, true) == 1
+  return fs.is_within(paths.vault_root, path)
 end
 
 local function open_tree_at(path, reveal_file)
-  if not is_dir(path) then
+  if not fs.is_directory(path) then
     vim.notify("Tree root does not exist: " .. path, vim.log.levels.WARN)
     return
   end
@@ -70,7 +58,7 @@ end
 
 local function active_note_path()
   local current = vim.api.nvim_buf_get_name(0)
-  if in_vault(current) and (is_file(current) or is_dir(current)) then
+  if in_vault(current) and (fs.is_file(current) or fs.is_directory(current)) then
     return current
   end
 
@@ -78,14 +66,14 @@ local function active_note_path()
     local buf = vim.api.nvim_win_get_buf(win)
     if vim.bo[buf].filetype ~= "neo-tree" then
       local name = vim.api.nvim_buf_get_name(buf)
-      if in_vault(name) and (is_file(name) or is_dir(name)) then
+      if in_vault(name) and (fs.is_file(name) or fs.is_directory(name)) then
         return name
       end
     end
   end
 
   local alternate = vim.fn.bufname("#")
-  if in_vault(alternate) and (is_file(alternate) or is_dir(alternate)) then
+  if in_vault(alternate) and (fs.is_file(alternate) or fs.is_directory(alternate)) then
     return alternate
   end
 
@@ -97,7 +85,7 @@ local function current_scope_dir()
   if current == "" then
     return paths.zettel_root
   end
-  if is_dir(current) then
+  if fs.is_directory(current) then
     return current
   end
   return vim.fn.fnamemodify(current, ":h")
@@ -131,7 +119,7 @@ local function fallback_buffer(current)
 end
 
 local function find_files(opts)
-  if not is_dir(opts.cwd) then
+  if not fs.is_directory(opts.cwd) then
     vim.notify("File search root does not exist: " .. opts.cwd, vim.log.levels.WARN)
     return
   end
@@ -151,7 +139,7 @@ local function find_files(opts)
 end
 
 local function grep(opts)
-  if not is_dir(opts.cwd) then
+  if not fs.is_directory(opts.cwd) then
     vim.notify("Content search root does not exist: " .. opts.cwd, vim.log.levels.WARN)
     return
   end
@@ -195,7 +183,7 @@ function M.grep_in()
 end
 
 function M.search_word()
-  if not is_dir(paths.zettel_root) then
+  if not fs.is_directory(paths.zettel_root) then
     vim.notify("Content search root does not exist: " .. paths.zettel_root, vim.log.levels.WARN)
     return
   end
@@ -269,14 +257,14 @@ function M.read_focused_folder()
   if manager then
     for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
       local state = manager.get_state_for_window(win)
-      if state and state.name == "filesystem" and is_dir(state.path) then
+      if state and state.name == "filesystem" and fs.is_directory(state.path) then
         M.read_folder(state.path)
         return
       end
     end
 
     local ok, state = pcall(manager.get_state, "filesystem")
-    if ok and state and is_dir(state.path) then
+    if ok and state and fs.is_directory(state.path) then
       M.read_folder(state.path)
       return
     end
@@ -431,15 +419,15 @@ function M.reveal_current_note()
     return
   end
 
-  local dir = is_dir(current) and current or vim.fn.fnamemodify(current, ":h")
-  local reveal_file = is_file(current) and current or nil
+  local dir = fs.is_directory(current) and current or vim.fn.fnamemodify(current, ":h")
+  local reveal_file = fs.is_file(current) and current or nil
   open_tree_at(dir, reveal_file)
 end
 
 function M.focus_tree()
   local current = active_note_path()
   local dir = current_scope_dir()
-  local reveal_file = is_file(current) and current or nil
+  local reveal_file = fs.is_file(current) and current or nil
   open_tree_at(dir, reveal_file)
 end
 
