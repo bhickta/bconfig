@@ -29,3 +29,11 @@ assert_eq(translation.parse_google_response("not json"), nil, "invalid responses
 local args = translation.curl_args()
 assert_eq(vim.tbl_contains(args, "q@-"), true, "selected text is sent over stdin")
 assert_eq(vim.tbl_contains(args, "tl=hi"), true, "Hindi is the target language")
+
+local folder_buf = vim.api.nvim_create_buf(false, true)
+vim.api.nvim_set_current_buf(folder_buf)
+vim.bo[folder_buf].buftype = "nofile"
+vim.bo[folder_buf].filetype = "markdown"
+vim.b[folder_buf].upsc_folder_reader_root = "/notes/focused"
+assert_eq(translation.is_note_buffer(folder_buf), true, "combined folder views support selection translation")
+vim.api.nvim_buf_delete(folder_buf, { force = true })

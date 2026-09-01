@@ -304,7 +304,6 @@ function M.open(root)
     configure_buffer(buf)
   end
   vim.api.nvim_win_set_cursor(win, { document.sections[1].heading_line, 0 })
-  require("upsc_notes.block_focus").disable({ notify = false })
 end
 
 return M

@@ -16,8 +16,8 @@ local function is_visual_mode(mode)
   return mode == "v" or mode == "V" or mode == "\22"
 end
 
-local function is_note_buffer()
-  return vim.bo.filetype == "markdown" and vim.bo.buftype == ""
+function M.is_note_buffer(buf)
+  return require("upsc_notes.buffer").is_readable_markdown(buf)
 end
 
 local function normalized_positions(start_row, start_col, end_row, end_col)
@@ -243,7 +243,7 @@ end
 function M.queue_selection()
   queue_token = queue_token + 1
   local current_queue = queue_token
-  if not enabled() or not is_note_buffer() or not is_visual_mode(vim.fn.mode()) then
+  if not enabled() or not M.is_note_buffer() or not is_visual_mode(vim.fn.mode()) then
     request_token = request_token + 1
     M.close_popup()
     return

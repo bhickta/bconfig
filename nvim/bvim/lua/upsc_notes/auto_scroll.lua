@@ -94,7 +94,7 @@ end
 
 function M.start(opts)
   local buf = vim.api.nvim_get_current_buf()
-  if vim.bo[buf].filetype ~= "markdown" or vim.bo[buf].buftype ~= "" then
+  if not require("upsc_notes.buffer").is_readable_markdown(buf) then
     vim.notify("Auto-scroll is available in Markdown notes", vim.log.levels.WARN)
     return
   end

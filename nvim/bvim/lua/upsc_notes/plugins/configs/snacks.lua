@@ -12,18 +12,24 @@ return {
     scope = { char = "▏" },
     animate = { enabled = false },
     filter = function(buf)
-      return vim.bo[buf].buftype == "" and vim.g.snacks_indent ~= false and vim.b[buf].snacks_indent ~= false
+      return require("upsc_notes.buffer").is_standard_or_folder(buf)
+        and vim.g.snacks_indent ~= false
+        and vim.b[buf].snacks_indent ~= false
     end,
   },
   scope = {
     filter = function(buf)
-      return vim.bo[buf].buftype == "" and vim.g.snacks_scope ~= false and vim.b[buf].snacks_scope ~= false
+      return require("upsc_notes.buffer").is_standard_or_folder(buf)
+        and vim.g.snacks_scope ~= false
+        and vim.b[buf].snacks_scope ~= false
     end,
   },
   words = {
     enabled = true,
     filter = function(buf)
-      return vim.bo[buf].buftype == "" and vim.g.snacks_words ~= false and vim.b[buf].snacks_words ~= false
+      return require("upsc_notes.buffer").is_standard_or_folder(buf)
+        and vim.g.snacks_words ~= false
+        and vim.b[buf].snacks_words ~= false
     end,
   },
   zen = {

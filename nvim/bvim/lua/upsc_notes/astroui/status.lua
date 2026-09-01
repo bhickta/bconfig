@@ -151,7 +151,7 @@ local reading_time = {
       return false
     end
     local buf = vim.api.nvim_win_get_buf(win)
-    return vim.bo[buf].filetype == "markdown" and vim.bo[buf].buftype == ""
+    return require("upsc_notes.buffer").is_readable_markdown(buf)
   end,
   provider = function()
     local win = status_win()
@@ -204,7 +204,9 @@ local bufferline = {
 local winbar = {
   condition = function()
     local ft = vim.bo.filetype
-    return ft ~= "neo-tree" and ft ~= "alpha" and vim.bo.buftype == ""
+    return ft ~= "neo-tree"
+      and ft ~= "alpha"
+      and require("upsc_notes.buffer").is_standard_or_folder()
   end,
   hl = { fg = colors.subtle, bg = colors.bg },
   {

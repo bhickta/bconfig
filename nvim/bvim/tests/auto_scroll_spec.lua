@@ -46,6 +46,18 @@ assert_eq(#deferred, scheduled_before_move + 1, "manual movement immediately res
 assert_eq(deferred[#deferred].delay, 240, "manual movement uses the new line's reading delay")
 auto_scroll.stop({ notify = false })
 assert_eq(auto_scroll.is_active(buf), false, "auto-scroll stops")
+
+local folder_buf = vim.api.nvim_create_buf(false, true)
+vim.api.nvim_set_current_buf(folder_buf)
+vim.bo[folder_buf].buftype = "nofile"
+vim.bo[folder_buf].filetype = "markdown"
+vim.b[folder_buf].upsc_folder_reader_root = "/notes/focused"
+vim.api.nvim_buf_set_lines(folder_buf, 0, -1, false, { "one two", "three four" })
+auto_scroll.start({ notify = false })
+assert_eq(auto_scroll.is_active(folder_buf), true, "auto-scroll starts in a combined folder view")
+auto_scroll.stop({ notify = false })
+
 vim.defer_fn = original_defer_fn
 
 vim.api.nvim_buf_delete(buf, { force = true })
+vim.api.nvim_buf_delete(folder_buf, { force = true })

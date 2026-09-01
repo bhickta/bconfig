@@ -534,6 +534,12 @@ end
 
 function M.set_edit_mode(opts)
   opts = opts or {}
+  if require("upsc_notes.buffer").is_folder_reader() then
+    if opts.notify ~= false then
+      vim.notify("The combined folder view is read-only; use gf to edit its source note", vim.log.levels.INFO)
+    end
+    return
+  end
   vim.opt_local.modifiable = true
   vim.opt_local.readonly = false
   set_markdown_reading_buffer(false)
