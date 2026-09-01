@@ -8,6 +8,45 @@ local skipped_directories = {
   [".trash"] = true,
 }
 
+local function cursor_state_file()
+  if type(vim.g.upsc_folder_reader_state_file) == "string" and vim.g.upsc_folder_reader_state_file ~= "" then
+    return vim.fs.normalize(vim.fn.expand(vim.g.upsc_folder_reader_state_file))
+  end
+  return vim.fs.joinpath(vim.fn.stdpath("state"), "bvim-folder-reader-cursors.json")
+end
+
+local function read_cursor_positions()
+  local ok, lines = pcall(vim.fn.readfile, cursor_state_file())
+  if not ok or #lines == 0 then
+    return {}
+  end
+
+  local decoded_ok, positions = pcall(vim.json.decode, table.concat(lines, "\n"))
+  return decoded_ok and type(positions) == "table" and positions or {}
+end
+
+local function write_cursor_positions(positions)
+  local encoded_ok, encoded = pcall(vim.json.encode, positions)
+  if not encoded_ok then
+    return false
+  end
+
+  local path = cursor_state_file()
+  vim.fn.mkdir(vim.fs.dirname(path), "p")
+  local temporary_path = path .. "." .. uv.os_getpid() .. ".tmp"
+  local write_ok, result = pcall(vim.fn.writefile, { encoded }, temporary_path)
+  if not write_ok or result == -1 then
+    return false
+  end
+
+  local renamed = uv.fs_rename(temporary_path, path)
+  if not renamed then
+    vim.fn.delete(temporary_path)
+    return false
+  end
+  return true
+end
+
 local function is_directory(path)
   local stat = uv.fs_stat(path)
   return stat and stat.type == "directory"
@@ -209,6 +248,80 @@ function M.section_at(sections, line)
   return current
 end
 
+local function window_for_buffer(buf)
+  local current_win = vim.api.nvim_get_current_win()
+  if vim.api.nvim_win_get_buf(current_win) == buf then
+    return current_win
+  end
+
+  for _, win in ipairs(vim.fn.win_findbuf(buf)) do
+    if vim.api.nvim_win_is_valid(win) and vim.api.nvim_win_get_buf(win) == buf then
+      return win
+    end
+  end
+end
+
+local function capture_position(buf, win)
+  if not vim.api.nvim_buf_is_valid(buf) then
+    return nil
+  end
+
+  win = win or window_for_buffer(buf)
+  if not win or not vim.api.nvim_win_is_valid(win) or vim.api.nvim_win_get_buf(win) ~= buf then
+    return nil
+  end
+
+  local cursor = vim.api.nvim_win_get_cursor(win)
+  local section = M.section_at(vim.b[buf].upsc_folder_reader_sections, cursor[1])
+  local position = {
+    line = cursor[1],
+    column = cursor[2],
+  }
+  if section and cursor[1] <= section.content_end then
+    position.relative_path = section.relative_path
+    position.section_offset = cursor[1] - section.heading_line
+  end
+  return position
+end
+
+function M.remember_position(buf, win)
+  buf = buf or vim.api.nvim_get_current_buf()
+  local root = vim.api.nvim_buf_is_valid(buf) and vim.b[buf].upsc_folder_reader_root or nil
+  local position = type(root) == "string" and capture_position(buf, win) or nil
+  if not position then
+    return false
+  end
+
+  local positions = read_cursor_positions()
+  positions[root] = position
+  return write_cursor_positions(positions)
+end
+
+local function saved_position(root)
+  local position = read_cursor_positions()[root]
+  return type(position) == "table" and position or nil
+end
+
+local function restore_position(win, document, position)
+  local line = position and tonumber(position.line) or document.sections[1].heading_line
+  local column = position and tonumber(position.column) or 0
+
+  if position and type(position.relative_path) == "string" then
+    for _, section in ipairs(document.sections) do
+      if section.relative_path == position.relative_path then
+        local offset = tonumber(position.section_offset) or 0
+        line = math.max(section.heading_line, math.min(section.content_end, section.heading_line + offset))
+        break
+      end
+    end
+  end
+
+  line = math.max(1, math.min(#document.lines, math.floor(line or 1)))
+  local text = document.lines[line] or ""
+  column = math.max(0, math.min(#text, math.floor(column or 0)))
+  vim.api.nvim_win_set_cursor(win, { line, column })
+end
+
 local function buffer_for_root(root)
   for _, buf in ipairs(vim.api.nvim_list_bufs()) do
     if vim.api.nvim_buf_is_valid(buf) and vim.b[buf].upsc_folder_reader_root == root then
@@ -335,18 +448,12 @@ function M.refresh(buf)
     return
   end
 
-  local previous = current_section(buf)
-  local previous_path = previous and previous.path
+  local previous_position = capture_position(buf)
   local document = M.compose(root)
   render(buf, document)
 
   if vim.api.nvim_get_current_buf() == buf then
-    for _, section in ipairs(document.sections) do
-      if section.path == previous_path then
-        vim.api.nvim_win_set_cursor(0, { section.heading_line, 0 })
-        break
-      end
-    end
+    restore_position(vim.api.nvim_get_current_win(), document, previous_position)
   end
   vim.notify(("Folder view refreshed: %d notes"):format(document.file_count), vim.log.levels.INFO)
 end
@@ -365,6 +472,7 @@ function M.open(root)
   end
 
   local buf = buffer_for_root(root) or vim.api.nvim_create_buf(false, true)
+  local previous_position = capture_position(buf) or saved_position(root)
   local is_new = vim.api.nvim_buf_get_name(buf) == ""
   if is_new then
     vim.api.nvim_buf_set_name(buf, "folder://" .. root)
@@ -377,7 +485,32 @@ function M.open(root)
   if is_new then
     configure_buffer(buf)
   end
-  vim.api.nvim_win_set_cursor(win, { document.sections[1].heading_line, 0 })
+  restore_position(win, document, previous_position)
+end
+
+function M.setup()
+  local group = vim.api.nvim_create_augroup("UpscFolderReaderPosition", { clear = true })
+  vim.api.nvim_create_autocmd("BufLeave", {
+    group = group,
+    desc = "Remember the cursor position in combined folder views",
+    callback = function(event)
+      if require("upsc_notes.buffer").is_folder_reader(event.buf) then
+        M.remember_position(event.buf, vim.api.nvim_get_current_win())
+      end
+    end,
+  })
+  vim.api.nvim_create_autocmd("VimLeavePre", {
+    group = group,
+    desc = "Persist active combined folder view positions",
+    callback = function()
+      for _, win in ipairs(vim.api.nvim_list_wins()) do
+        local buf = vim.api.nvim_win_get_buf(win)
+        if require("upsc_notes.buffer").is_folder_reader(buf) then
+          M.remember_position(buf, win)
+        end
+      end
+    end,
+  })
 end
 
 return M

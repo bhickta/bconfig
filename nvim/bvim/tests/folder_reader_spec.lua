@@ -10,6 +10,7 @@ local function assert_eq(actual, expected, message)
 end
 
 local root = vim.fn.tempname()
+vim.g.upsc_folder_reader_state_file = root .. "/folder-reader-cursors.json"
 vim.fn.mkdir(root .. "/nested/deeper", "p")
 vim.fn.mkdir(root .. "/.git", "p")
 vim.fn.writefile({ "# Alpha", "one two" }, root .. "/01-alpha.md")
@@ -62,6 +63,7 @@ assert_eq(
   "combined documents should include unsaved changes from loaded notes"
 )
 
+reader.setup()
 reader.open(root)
 local buf = vim.api.nvim_get_current_buf()
 assert_eq(vim.bo[buf].buftype, "nofile", "folder view should be a scratch buffer")
@@ -80,6 +82,28 @@ for lhs, description in pairs({
 end
 
 local folder_buf = buf
+local beta = vim.b[buf].upsc_folder_reader_sections[2]
+local saved_offset = beta.content_start + 1 - beta.heading_line
+vim.api.nvim_win_set_cursor(0, { beta.content_start + 1, 2 })
+vim.api.nvim_buf_delete(folder_buf, { force = true })
+
+local saved_positions = vim.json.decode(table.concat(vim.fn.readfile(vim.g.upsc_folder_reader_state_file), "\n"))
+local saved = saved_positions[vim.fs.normalize(root)]
+assert_eq(saved.relative_path, "02-beta.MD", "folder cursor state should remember the focused note")
+assert_eq(saved.section_offset, saved_offset, "folder cursor state should remember the offset within its note")
+assert_eq(saved.column, 2, "folder cursor state should remember the cursor column")
+
+vim.api.nvim_buf_set_lines(alpha_buf, 1, 1, false, { "new earlier line shifts following sections" })
+reader.open(root)
+buf = vim.api.nvim_get_current_buf()
+folder_buf = buf
+local restored_beta = vim.b[buf].upsc_folder_reader_sections[2]
+assert_eq(
+  vim.api.nvim_win_get_cursor(0),
+  { restored_beta.heading_line + saved_offset, 2 },
+  "folder view should restore the note-relative cursor after earlier content changes"
+)
+
 local nested = vim.b[buf].upsc_folder_reader_sections[3]
 vim.api.nvim_win_set_cursor(0, { nested.content_start + 1, 0 })
 reader.open_source()
@@ -117,4 +141,5 @@ end
 if vim.api.nvim_buf_is_valid(alpha_buf) then
   vim.api.nvim_buf_delete(alpha_buf, { force = true })
 end
+vim.g.upsc_folder_reader_state_file = nil
 vim.fn.delete(root, "rf")
