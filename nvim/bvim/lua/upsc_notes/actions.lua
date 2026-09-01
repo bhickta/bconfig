@@ -229,7 +229,12 @@ end
 function M.find_recent_files()
   local picker = snacks_picker()
   if picker then
-    picker.recent({ title = "Recent files" })
+    local opts = require("upsc_notes.recent_views").picker_options()
+    if opts then
+      picker.pick(picker_defaults(opts))
+    else
+      picker.recent({ title = "Recent files" })
+    end
     return
   end
 

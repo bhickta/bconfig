@@ -8,45 +8,6 @@ local skipped_directories = {
   [".trash"] = true,
 }
 
-local function cursor_state_file()
-  if type(vim.g.upsc_folder_reader_state_file) == "string" and vim.g.upsc_folder_reader_state_file ~= "" then
-    return vim.fs.normalize(vim.fn.expand(vim.g.upsc_folder_reader_state_file))
-  end
-  return vim.fs.joinpath(vim.fn.stdpath("state"), "bvim-folder-reader-cursors.json")
-end
-
-local function read_cursor_positions()
-  local ok, lines = pcall(vim.fn.readfile, cursor_state_file())
-  if not ok or #lines == 0 then
-    return {}
-  end
-
-  local decoded_ok, positions = pcall(vim.json.decode, table.concat(lines, "\n"))
-  return decoded_ok and type(positions) == "table" and positions or {}
-end
-
-local function write_cursor_positions(positions)
-  local encoded_ok, encoded = pcall(vim.json.encode, positions)
-  if not encoded_ok then
-    return false
-  end
-
-  local path = cursor_state_file()
-  vim.fn.mkdir(vim.fs.dirname(path), "p")
-  local temporary_path = path .. "." .. uv.os_getpid() .. ".tmp"
-  local write_ok, result = pcall(vim.fn.writefile, { encoded }, temporary_path)
-  if not write_ok or result == -1 then
-    return false
-  end
-
-  local renamed = uv.fs_rename(temporary_path, path)
-  if not renamed then
-    vim.fn.delete(temporary_path)
-    return false
-  end
-  return true
-end
-
 local function is_directory(path)
   local stat = uv.fs_stat(path)
   return stat and stat.type == "directory"
@@ -292,14 +253,15 @@ function M.remember_position(buf, win)
     return false
   end
 
-  local positions = read_cursor_positions()
-  positions[root] = position
-  return write_cursor_positions(positions)
+  return require("upsc_notes.folder_history").save(root, position)
 end
 
 local function saved_position(root)
-  local position = read_cursor_positions()[root]
-  return type(position) == "table" and position or nil
+  return require("upsc_notes.folder_history").get(root)
+end
+
+function M.recent(limit)
+  return require("upsc_notes.folder_history").recent(limit)
 end
 
 local function restore_position(win, document, position)
@@ -486,6 +448,7 @@ function M.open(root)
     configure_buffer(buf)
   end
   restore_position(win, document, previous_position)
+  M.remember_position(buf, win)
 end
 
 function M.setup()

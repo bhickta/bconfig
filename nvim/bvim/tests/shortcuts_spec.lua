@@ -57,7 +57,7 @@ assert_has_global("n", "<leader>rh")
 assert_has_global("n", "<leader>ra")
 assert_has_global("v", "<leader>mh")
 
-assert_unique(shortcuts.dashboard_buttons({
+local dashboard_buttons = shortcuts.dashboard_buttons({
   dashboard = {
     zettel_tree = "T",
     in_tree = "I",
@@ -67,9 +67,23 @@ assert_unique(shortcuts.dashboard_buttons({
     search = "S",
     quit = "Q",
   },
-}), function(button)
+})
+
+assert_unique(dashboard_buttons, function(button)
   return button.key
 end, "dashboard key")
+
+local recent_button_found = false
+for _, button in ipairs(dashboard_buttons) do
+  if button.key == "o" and not button.label:find("Folder Views", 1, true) then
+    error("dashboard o should advertise recent Folder Views")
+  elseif button.key == "o" then
+    recent_button_found = true
+  end
+end
+if not recent_button_found then
+  error("dashboard should keep the o recent-items shortcut")
+end
 
 assert_unique(shortcuts.which_key_groups(), function(group)
   return group[1]

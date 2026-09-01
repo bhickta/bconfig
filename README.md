@@ -69,6 +69,8 @@ Inside the combined view, use `] f` / `[ f` for the next or previous note, `g f`
 
 Folder View remembers the last focused note, position within that note, and cursor column for each folder. The position is restored after closing the view or restarting bvim, and remains accurate when earlier notes change length. This cursor history is machine-local and is not synchronized by the repository.
 
+Dashboard `o` and `Space f o` keep the normal recent-file results and also list recent Folder Views. Selecting one regenerates the combined view and restores its saved cursor position.
+
 The combined view supports the normal Markdown reading features, including rendered Markdown, total/remaining reading time, reading-speed controls, auto-scroll, block focus, selection translation, zen mode, and explorer split navigation. It stays read-only; use `g f` before editing source content.
 
 Block focus preserves context for nested points: when the cursor is on a child or deeper item, its top-level parent branch and descendants remain focused together.

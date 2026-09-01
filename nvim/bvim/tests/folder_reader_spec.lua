@@ -92,6 +92,8 @@ local saved = saved_positions[vim.fs.normalize(root)]
 assert_eq(saved.relative_path, "02-beta.MD", "folder cursor state should remember the focused note")
 assert_eq(saved.section_offset, saved_offset, "folder cursor state should remember the offset within its note")
 assert_eq(saved.column, 2, "folder cursor state should remember the cursor column")
+assert_eq(type(saved.updated_at), "number", "folder cursor state should record recency")
+assert_eq(reader.recent(1)[1].root, vim.fs.normalize(root), "recent Folder Views should expose the latest root")
 
 vim.api.nvim_buf_set_lines(alpha_buf, 1, 1, false, { "new earlier line shifts following sections" })
 reader.open(root)
