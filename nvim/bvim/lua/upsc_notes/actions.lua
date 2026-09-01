@@ -19,6 +19,9 @@ local function edit(path)
 end
 
 local function is_dir(path)
+  if type(path) ~= "string" or path == "" then
+    return false
+  end
   local stat = vim.loop.fs_stat(path)
   return stat and stat.type == "directory"
 end
@@ -256,8 +259,25 @@ function M.read_folder(dir)
   require("upsc_notes.folder_reader").open(dir)
 end
 
-function M.read_current_folder()
-  M.read_folder(current_scope_dir())
+function M.read_focused_folder()
+  local manager = package.loaded["neo-tree.sources.manager"]
+  if manager then
+    for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+      local state = manager.get_state_for_window(win)
+      if state and state.name == "filesystem" and is_dir(state.path) then
+        M.read_folder(state.path)
+        return
+      end
+    end
+
+    local ok, state = pcall(manager.get_state, "filesystem")
+    if ok and state and is_dir(state.path) then
+      M.read_folder(state.path)
+      return
+    end
+  end
+
+  vim.notify("Focus a folder in the filesystem explorer first", vim.log.levels.WARN)
 end
 
 function M.resume_picker()

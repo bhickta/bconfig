@@ -53,7 +53,7 @@ function M.setup()
   create_command("ScopeGrep", actions.grep_scope)
   create_command("ReadFolder", function(opts)
     if opts.args == "" then
-      actions.read_current_folder()
+      actions.read_focused_folder()
     else
       actions.read_folder(opts.args)
     end

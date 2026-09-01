@@ -63,6 +63,7 @@ local node = {
   end,
 }
 local state = {
+  path = "/notes/focused",
   tree = {
     get_node = function()
       return node
@@ -87,8 +88,8 @@ if captured.grep ~= "/notes/active/subfolder" then
 end
 
 opts.commands.read_folder(state)
-if captured.read ~= "/notes/active/subfolder" then
-  error("folder reader should use a selected file's parent directory")
+if captured.read ~= "/notes/focused" then
+  error("folder reader should use the filesystem explorer's focused root")
 end
 
 local opened = false

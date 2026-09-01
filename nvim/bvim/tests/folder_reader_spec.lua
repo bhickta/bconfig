@@ -13,14 +13,15 @@ local root = vim.fn.tempname()
 vim.fn.mkdir(root .. "/nested", "p")
 vim.fn.mkdir(root .. "/.git", "p")
 vim.fn.writefile({ "# Alpha", "one two" }, root .. "/01-alpha.md")
-vim.fn.writefile({ "# Beta", "three four five" }, root .. "/nested/02-beta.MD")
+vim.fn.writefile({ "# Beta", "three four five" }, root .. "/02-beta.MD")
+vim.fn.writefile({ "# Nested", "must not appear" }, root .. "/nested/03-nested.md")
 vim.fn.writefile({ "ignored" }, root .. "/notes.txt")
 vim.fn.writefile({ "hidden" }, root .. "/.git/hidden.md")
 
 assert_eq(
   vim.tbl_map(function(path) return path:sub(#root + 2) end, reader.markdown_files(root)),
-  { "01-alpha.md", "nested/02-beta.MD" },
-  "folder reader should recursively collect sorted Markdown files and skip metadata directories"
+  { "01-alpha.md", "02-beta.MD" },
+  "folder reader should collect only Markdown files directly inside the focused folder"
 )
 
 local document = reader.compose(root)
@@ -28,10 +29,10 @@ assert_eq(document.file_count, 2, "combined document file count")
 assert_eq(document.words, 9, "combined document word count")
 assert_eq(#document.sections, 2, "combined document sections")
 assert_eq(document.sections[1].relative_path, "01-alpha.md", "first section label")
-assert_eq(document.sections[2].relative_path, "nested/02-beta.MD", "nested section label")
+assert_eq(document.sections[2].relative_path, "02-beta.MD", "second section label")
 assert_eq(
   reader.section_at(document.sections, document.sections[2].content_start).path,
-  vim.fs.normalize(root .. "/nested/02-beta.MD"),
+  vim.fs.normalize(root .. "/02-beta.MD"),
   "cursor lines should resolve to their source note"
 )
 
@@ -68,10 +69,30 @@ vim.api.nvim_win_set_cursor(0, { second.content_start + 1, 0 })
 reader.open_source()
 assert_eq(
   vim.fs.normalize(vim.api.nvim_buf_get_name(0)),
-  vim.fs.normalize(root .. "/nested/02-beta.MD"),
+  vim.fs.normalize(root .. "/02-beta.MD"),
   "opening a combined section should edit its source note"
 )
 assert_eq(vim.api.nvim_win_get_cursor(0)[1], 2, "source note should open at the corresponding content line")
+
+local actual_reader = package.loaded["upsc_notes.folder_reader"]
+local actual_manager = package.loaded["neo-tree.sources.manager"]
+local captured_root
+package.loaded["upsc_notes.folder_reader"] = {
+  open = function(path)
+    captured_root = path
+  end,
+}
+package.loaded["neo-tree.sources.manager"] = {
+  get_state_for_window = function()
+    return { name = "filesystem", path = root }
+  end,
+}
+package.loaded["upsc_notes.actions"] = nil
+require("upsc_notes.actions").read_focused_folder()
+assert_eq(captured_root, root, "global folder reading should use Neo-tree's focused root")
+package.loaded["upsc_notes.actions"] = nil
+package.loaded["upsc_notes.folder_reader"] = actual_reader
+package.loaded["neo-tree.sources.manager"] = actual_manager
 
 vim.cmd.bdelete({ bang = true })
 if vim.api.nvim_buf_is_valid(folder_buf) then

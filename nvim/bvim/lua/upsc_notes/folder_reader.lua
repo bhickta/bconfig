@@ -2,11 +2,6 @@ local M = {}
 
 local uv = vim.uv or vim.loop
 local namespace = vim.api.nvim_create_namespace("UpscFolderReader")
-local skipped_directories = {
-  [".git"] = true,
-  [".smart-env"] = true,
-  [".trash"] = true,
-}
 
 local function is_directory(path)
   local stat = uv.fs_stat(path)
@@ -22,28 +17,22 @@ function M.markdown_files(root)
   root = vim.fs.normalize(vim.fn.fnamemodify(vim.fn.expand(root), ":p")):gsub("/$", "")
   local files = {}
 
-  local function scan(directory)
-    local handle = uv.fs_scandir(directory)
-    if not handle then
-      return
+  local handle = uv.fs_scandir(root)
+  if not handle then
+    return files
+  end
+
+  while true do
+    local name, kind = uv.fs_scandir_next(handle)
+    if not name then
+      break
     end
 
-    while true do
-      local name, kind = uv.fs_scandir_next(handle)
-      if not name then
-        break
-      end
-
-      local path = vim.fs.joinpath(directory, name)
-      if kind == "directory" and not skipped_directories[name] then
-        scan(path)
-      elseif kind == "file" and name:lower():match("%.md$") then
-        table.insert(files, vim.fs.normalize(path))
-      end
+    if kind == "file" and name:lower():match("%.md$") then
+      table.insert(files, vim.fs.normalize(vim.fs.joinpath(root, name)))
     end
   end
 
-  scan(root)
   table.sort(files, function(left, right)
     local left_relative = relative_path(root, left)
     local right_relative = relative_path(root, right)

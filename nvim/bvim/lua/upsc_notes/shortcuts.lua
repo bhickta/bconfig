@@ -122,7 +122,7 @@ function M.global(actions)
     map("n", "<leader>mo", command("ObsidianQuickSwitch"), "Obsidian quick switch"),
     map("n", "<leader>ms", command("ObsidianSearch"), "Obsidian search"),
     map("n", "<leader>mn", command("ObsidianNew"), "New note in in"),
-    map("n", "<leader>mr", actions.read_current_folder, "Read current folder"),
+    map("n", "<leader>mr", actions.read_focused_folder, "Read focused folder"),
     map("v", "<leader>mh", require("upsc_notes.selection_translation").translate_selection, "Translate selection to Hindi"),
 
     map("n", "gd", command("ObsidianFollowLink"), "Follow Obsidian link"),

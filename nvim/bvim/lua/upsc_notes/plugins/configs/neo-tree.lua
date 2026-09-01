@@ -287,9 +287,9 @@ local function grep_folder(state)
 end
 
 local function read_folder(state)
-  local dir = selected_folder(state)
-  if dir then
-    require("upsc_notes.actions").read_folder(dir)
+  state = current_tree_state(state)
+  if state and state.path then
+    require("upsc_notes.actions").read_folder(state.path)
   end
 end
 
@@ -548,7 +548,7 @@ function M.opts()
           ["<C-x>"] = { "clear_filter", desc = "Clear tree filter" },
           ["<leader>fS"] = { "find_folder_files", desc = "Find file in selected folder" },
           ["<leader>f/"] = { "grep_folder", desc = "Grep selected folder" },
-          gr = { "read_folder", desc = "Read folder as one document" },
+          gr = { "read_folder", desc = "Read focused folder as one document" },
           tf = { "toggle_filter", desc = "Toggle tree filter" },
           ["."] = "focus_folder",
           [","] = "unfocus_folder",
