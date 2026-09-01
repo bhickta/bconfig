@@ -63,7 +63,7 @@ Only committed and pushed files in this repository are synchronized. Credentials
 
 In bvim, focus a folder in Neo-tree with `.`, then use `Space m r` to combine its `.md` files into one read-only reading view. You can also press `g r` in Neo-tree or use `:ReadFolder [path]`. Markdown files in subfolders are included recursively; repository and trash metadata folders are skipped.
 
-The document hierarchy is `# folder`, `## filename.md`, then the source note's headings nested beneath it (`#` becomes `###`, `##` becomes `####`, and so on). Only the file name is displayed, not its folder path. Markdown-looking text inside fenced code blocks is preserved exactly.
+The document hierarchy follows the directory tree: `# current folder`, `## subfolder`, `### filename.md`, then that note's headings nested beneath it. Root-level notes are `## filename.md`, and deeper subfolders add another heading level. Only each file or folder's name is displayed, not its full path. Markdown-looking text inside fenced code blocks is preserved exactly; levels are capped at Markdown's `######` limit.
 
 Inside the combined view, use `] f` / `[ f` for the next or previous note, `g f` to open the source note at the corresponding line, `R` to refresh, and `q` to close. Files remain separate on disk; the combined buffer is only a reading view.
 

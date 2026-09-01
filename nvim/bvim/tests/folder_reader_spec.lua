@@ -10,11 +10,12 @@ local function assert_eq(actual, expected, message)
 end
 
 local root = vim.fn.tempname()
-vim.fn.mkdir(root .. "/nested", "p")
+vim.fn.mkdir(root .. "/nested/deeper", "p")
 vim.fn.mkdir(root .. "/.git", "p")
 vim.fn.writefile({ "# Alpha", "one two" }, root .. "/01-alpha.md")
 vim.fn.writefile({ "# Beta", "three four five" }, root .. "/02-beta.MD")
 vim.fn.writefile({ "# Nested", "must also appear" }, root .. "/nested/03-nested.md")
+vim.fn.writefile({ "# Deep", "six" }, root .. "/nested/deeper/04-deep.md")
 vim.fn.writefile({ "ignored" }, root .. "/notes.txt")
 vim.fn.writefile({ "hidden" }, root .. "/.git/hidden.md")
 
@@ -26,20 +27,25 @@ assert_eq(
 
 assert_eq(
   vim.tbl_map(function(path) return path:sub(#root + 2) end, reader.markdown_files(root)),
-  { "01-alpha.md", "02-beta.MD", "nested/03-nested.md" },
+  { "01-alpha.md", "02-beta.MD", "nested/03-nested.md", "nested/deeper/04-deep.md" },
   "folder reader should recursively collect Markdown files and skip metadata directories"
 )
 
 local document = reader.compose(root)
-assert_eq(document.file_count, 3, "combined document file count")
-assert_eq(document.words, 14, "combined document word count")
-assert_eq(#document.sections, 3, "combined document sections")
+assert_eq(document.file_count, 4, "combined document file count")
+assert_eq(document.words, 17, "combined document word count")
+assert_eq(#document.sections, 4, "combined document sections")
 assert_eq(document.sections[1].relative_path, "01-alpha.md", "first section label")
 assert_eq(document.sections[2].relative_path, "02-beta.MD", "second section label")
 assert_eq(document.sections[3].relative_path, "nested/03-nested.md", "nested section label")
-assert_eq(vim.tbl_contains(document.lines, "## 03-nested.md"), true, "section headings should show only file names")
+assert_eq(vim.tbl_contains(document.lines, "## nested"), true, "subfolders should appear in the document hierarchy")
+assert_eq(vim.tbl_contains(document.lines, "### 03-nested.md"), true, "nested notes should sit below their folder")
+assert_eq(vim.tbl_contains(document.lines, "## 03-nested.md"), false, "nested notes should not be flattened")
 assert_eq(vim.tbl_contains(document.lines, "## nested/03-nested.md"), false, "section headings should hide relative paths")
-assert_eq(vim.tbl_contains(document.lines, "### Nested"), true, "source headings should be nested below file names")
+assert_eq(vim.tbl_contains(document.lines, "#### Nested"), true, "source headings should be nested below file names")
+assert_eq(vim.tbl_contains(document.lines, "### deeper"), true, "deeper folders should add another heading level")
+assert_eq(vim.tbl_contains(document.lines, "#### 04-deep.md"), true, "deeper notes should sit below their folder")
+assert_eq(vim.tbl_contains(document.lines, "##### Deep"), true, "deep note headings should sit below their file")
 assert_eq(
   reader.section_at(document.sections, document.sections[2].content_start).path,
   vim.fs.normalize(root .. "/02-beta.MD"),

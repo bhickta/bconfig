@@ -18,6 +18,12 @@ local function relative_path(root, path)
   return path:sub(1, #prefix) == prefix and path:sub(#prefix + 1) or vim.fs.basename(path)
 end
 
+local function directory_parts(path)
+  local parts = vim.split(path, "/", { plain = true, trimempty = true })
+  table.remove(parts)
+  return parts
+end
+
 function M.markdown_files(root)
   root = vim.fs.normalize(vim.fn.fnamemodify(vim.fn.expand(root), ":p")):gsub("/$", "")
   local files = {}
@@ -124,7 +130,8 @@ function M.compose(root)
         path = path,
         relative_path = relative_path(root, path),
         name = vim.fs.basename(path),
-        lines = M.nest_headings(lines, 2),
+        directories = directory_parts(relative_path(root, path)),
+        lines = lines,
         words = words,
       })
     end
@@ -145,11 +152,29 @@ function M.compose(root)
     ),
   }
   local sections = {}
+  local previous_directories = {}
 
   for _, document in ipairs(documents) do
-    vim.list_extend(lines, { "", "---", "", "## " .. document.name, "" })
+    local common_depth = 0
+    while
+      common_depth < #previous_directories
+      and common_depth < #document.directories
+      and previous_directories[common_depth + 1] == document.directories[common_depth + 1]
+    do
+      common_depth = common_depth + 1
+    end
+
+    vim.list_extend(lines, { "", "---", "" })
+    for depth = common_depth + 1, #document.directories do
+      table.insert(lines, string.rep("#", math.min(6, depth + 1)) .. " " .. document.directories[depth])
+      table.insert(lines, "")
+    end
+
+    local file_heading_level = math.min(6, #document.directories + 2)
+    table.insert(lines, string.rep("#", file_heading_level) .. " " .. document.name)
+    table.insert(lines, "")
     local content_start = #lines + 1
-    vim.list_extend(lines, document.lines)
+    vim.list_extend(lines, M.nest_headings(document.lines, file_heading_level))
     table.insert(sections, {
       path = document.path,
       relative_path = document.relative_path,
@@ -159,6 +184,7 @@ function M.compose(root)
       source_line_count = #document.lines,
       words = document.words,
     })
+    previous_directories = document.directories
   end
 
   return {
