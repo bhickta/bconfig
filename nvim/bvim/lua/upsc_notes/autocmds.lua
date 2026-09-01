@@ -226,6 +226,7 @@ function M.setup()
     callback = function(event)
       vim.wo.wrap = true
       vim.wo.linebreak = true
+      vim.wo.scrolloff = 0
       vim.wo.sidescrolloff = 0
       vim.wo.statuscolumn = ""
 

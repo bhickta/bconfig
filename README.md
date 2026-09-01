@@ -71,6 +71,8 @@ The combined view supports the normal Markdown reading features, including rende
 
 The bottom-right statusline shows `Ln current/total Col column`, so the total number of lines remains visible in normal notes and combined folder views.
 
+File scrolling keeps the cursor line centered vertically whenever the document has enough surrounding lines. Neo-tree retains normal list scrolling.
+
 For an offline relink that does not restore plugins, use:
 
 ```sh

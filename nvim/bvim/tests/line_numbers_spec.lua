@@ -11,6 +11,7 @@ end
 require("upsc_notes.options").setup()
 assert_eq(vim.wo.number, false, "absolute numbers are disabled by default")
 assert_eq(vim.wo.relativenumber, true, "relative numbers are enabled by default")
+assert_eq(vim.wo.scrolloff, 999, "the active file line remains vertically centered while scrolling")
 
 local status = require("upsc_notes.astroui.status")
 assert_eq(status.relative_line_number(0, 0), "%#CursorLineNr#0 ", "current line displays zero")
@@ -42,3 +43,10 @@ assert_eq(vim.wo.relativenumber, true, "read mode keeps relative numbers enabled
 actions.set_edit_mode({ notify = false })
 assert_eq(vim.wo.number, false, "edit mode keeps absolute numbers disabled")
 assert_eq(vim.wo.relativenumber, true, "edit mode keeps relative numbers enabled")
+
+require("upsc_notes.autocmds").setup()
+local tree_buf = vim.api.nvim_create_buf(false, true)
+vim.api.nvim_set_current_buf(tree_buf)
+vim.bo[tree_buf].filetype = "neo-tree"
+assert_eq(vim.wo.scrolloff, 0, "Neo-tree keeps normal list scrolling")
+vim.api.nvim_buf_delete(tree_buf, { force = true })
