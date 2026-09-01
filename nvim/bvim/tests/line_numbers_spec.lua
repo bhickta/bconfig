@@ -29,6 +29,7 @@ assert_eq(
   true,
   "folder reading time reacts to speed changes"
 )
+assert_eq(heirline_config.statusline[13].provider, " Ln %l/%L Col %c ", "bottom corner shows current and total lines")
 package.loaded.heirline = original_heirline
 
 local actions = require("upsc_notes.actions")

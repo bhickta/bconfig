@@ -135,7 +135,7 @@ local filetype = {
 }
 
 local location = {
-  provider = " %l:%c ",
+  provider = " Ln %l/%L Col %c ",
   hl = { fg = colors.peach, bg = colors.bg_alt },
 }
 
@@ -264,8 +264,8 @@ function M.setup()
       filetype,
       reading_time,
       folder_reading_time,
-      location,
       progress,
+      location,
     },
     winbar = winbar,
     tabline = bufferline,
