@@ -96,7 +96,7 @@ function M.status(buf, opts)
   opts = opts or {}
   local total = M.estimate(buf, opts.now)
   local remaining = M.estimate(buf, opts.now, opts.start_line)
-  local marker = opts.active and "▶ " or ""
+  local marker = opts.active and "▶ " or opts.paused and "⏸ " or ""
   return (" %s%s total %d min / left %d min / by %s "):format(
     marker,
     remaining.mode:upper(),

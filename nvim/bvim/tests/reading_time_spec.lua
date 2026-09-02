@@ -36,6 +36,9 @@ assert_eq(reading_time.word_count_from(buf, 2), 1, "remaining count from current
 if not reading_time.status(buf, { active = true, start_line = 2 }):find("▶ XFAST", 1, true) then
   error("active reading status should show the auto-scroll marker")
 end
+if not reading_time.status(buf, { paused = true, start_line = 2 }):find("⏸ XFAST", 1, true) then
+  error("paused reading status should show the pause marker")
+end
 
 vim.api.nvim_buf_set_lines(buf, 0, -1, false, { table.concat(vim.fn.map(vim.fn.range(1, 501), '"word"'), " ") })
 

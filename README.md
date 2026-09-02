@@ -73,6 +73,8 @@ Dashboard `o` and `Space f o` keep the normal recent-file results and also list 
 
 The combined view supports the normal Markdown reading features, including rendered Markdown, total/remaining reading time, reading-speed controls, auto-scroll, block focus, selection translation, zen mode, and explorer split navigation. It stays read-only; use `g f` before editing source content.
 
+Auto-scroll starts at the current cursor position. Use `Space r a` to start it, pause without losing your place, and resume from the same line. The statusline shows `▶` while it is running and `⏸` while paused.
+
 Block focus preserves context for nested points: when the cursor is on a child or deeper item, its top-level parent branch and descendants remain focused together.
 
 The bottom-right statusline shows `Ln current/total Col column`, so the total number of lines remains visible in normal notes and combined folder views.

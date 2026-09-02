@@ -38,7 +38,24 @@ end
 vim.api.nvim_win_set_cursor(0, { 3, 0 })
 auto_scroll.start({ notify = false })
 assert_eq(auto_scroll.is_active(buf), true, "auto-scroll starts for a Markdown note")
-assert_eq(vim.api.nvim_win_get_cursor(0)[1], 1, "auto-scroll always restarts from the top")
+assert_eq(vim.api.nvim_win_get_cursor(0)[1], 3, "auto-scroll starts from the cursor position")
+assert_eq(deferred[#deferred].delay, 120, "the initial delay uses the cursor line")
+
+local pending_before_pause = deferred[#deferred]
+assert_eq(auto_scroll.pause({ notify = false }), true, "running auto-scroll can be paused")
+assert_eq(auto_scroll.is_active(buf), false, "paused auto-scroll is not active")
+assert_eq(auto_scroll.is_paused(buf), true, "paused auto-scroll retains its session")
+pending_before_pause.callback()
+assert_eq(vim.api.nvim_win_get_cursor(0)[1], 3, "a cancelled timer cannot move the cursor while paused")
+assert_eq(auto_scroll.resume({ notify = false }), true, "paused auto-scroll can resume")
+assert_eq(auto_scroll.is_active(buf), true, "resumed auto-scroll is active")
+assert_eq(auto_scroll.is_paused(buf), false, "resumed auto-scroll is no longer paused")
+assert_eq(vim.api.nvim_win_get_cursor(0)[1], 3, "resume continues from the paused cursor position")
+auto_scroll.toggle()
+assert_eq(auto_scroll.is_paused(buf), true, "the auto-scroll shortcut pauses a running reader")
+auto_scroll.toggle()
+assert_eq(auto_scroll.is_active(buf), true, "the auto-scroll shortcut resumes a paused reader")
+
 local scheduled_before_move = #deferred
 vim.api.nvim_win_set_cursor(0, { 2, 0 })
 vim.api.nvim_exec_autocmds("CursorMoved", { buffer = buf })
@@ -46,6 +63,7 @@ assert_eq(#deferred, scheduled_before_move + 1, "manual movement immediately res
 assert_eq(deferred[#deferred].delay, 240, "manual movement uses the new line's reading delay")
 auto_scroll.stop({ notify = false })
 assert_eq(auto_scroll.is_active(buf), false, "auto-scroll stops")
+assert_eq(auto_scroll.is_paused(buf), false, "stopping discards the paused session")
 
 local folder_buf = vim.api.nvim_create_buf(false, true)
 vim.api.nvim_set_current_buf(folder_buf)

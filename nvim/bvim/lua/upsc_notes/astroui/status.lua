@@ -157,9 +157,9 @@ local reading_time = {
     local win = status_win()
     local buf = vim.api.nvim_win_get_buf(win)
     local auto_scroll = require("upsc_notes.auto_scroll")
-    local active = auto_scroll.is_active(buf)
     return require("upsc_notes.reading_time").status(buf, {
-      active = active,
+      active = auto_scroll.is_active(buf),
+      paused = auto_scroll.is_paused(buf),
       start_line = vim.api.nvim_win_get_cursor(win)[1],
     })
   end,

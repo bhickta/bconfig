@@ -145,7 +145,7 @@ function M.global(actions)
     map("n", "<leader>rm", actions.toggle_markdown_render, "Toggle markdown render"),
     map("n", "<leader>rt", require("upsc_notes.reading_time").cycle_mode, "Cycle reading speed"),
     map("n", "<leader>rh", require("upsc_notes.selection_translation").toggle, "Toggle Hindi translation"),
-    map("n", "<leader>ra", require("upsc_notes.auto_scroll").toggle, "Toggle auto-scroll"),
+    map("n", "<leader>ra", require("upsc_notes.auto_scroll").toggle, "Pause/resume auto-scroll"),
     map("n", "<leader>rf", require("upsc_notes.block_focus").toggle, "Toggle block focus"),
 
     map("n", "<leader>pi", command("Lazy install"), "Plugins install"),

@@ -28,6 +28,8 @@ local expected_commands = {
   "TranslateVisual",
   "ToggleSelectionTranslation",
   "AutoScroll",
+  "AutoScrollPause",
+  "AutoScrollResume",
   "AutoScrollStop",
   "ToggleAutoScroll",
 }

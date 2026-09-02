@@ -83,6 +83,8 @@ function M.setup()
   create_command("WebLookup", web_lookup.search, { nargs = "*", range = true })
   create_command("WebLookupClose", web_lookup.close)
   create_command("AutoScroll", auto_scroll.start)
+  create_command("AutoScrollPause", auto_scroll.pause)
+  create_command("AutoScrollResume", auto_scroll.resume)
   create_command("AutoScrollStop", auto_scroll.stop)
   create_command("ToggleAutoScroll", auto_scroll.toggle)
 end

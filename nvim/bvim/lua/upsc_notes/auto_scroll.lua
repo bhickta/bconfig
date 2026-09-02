@@ -12,11 +12,22 @@ local function emit_change()
   vim.cmd.redrawstatus()
 end
 
+local function belongs_to_session(buf)
+  return session ~= nil and (buf == nil or session.buf == buf)
+end
+
 function M.is_active(buf)
   if buf == 0 then
     buf = vim.api.nvim_get_current_buf()
   end
-  return session ~= nil and (buf == nil or session.buf == buf)
+  return belongs_to_session(buf) and not session.paused
+end
+
+function M.is_paused(buf)
+  if buf == 0 then
+    buf = vim.api.nvim_get_current_buf()
+  end
+  return belongs_to_session(buf) and session.paused
 end
 
 function M.delay_for_line(line)
@@ -42,7 +53,7 @@ function M.stop(opts)
 end
 
 local function schedule_current_line()
-  if not session then
+  if not session or session.paused then
     return
   end
 
@@ -101,11 +112,7 @@ function M.start(opts)
     M.stop({ notify = false })
   end
   local win = vim.api.nvim_get_current_win()
-  vim.api.nvim_win_set_cursor(win, { 1, 0 })
-  vim.api.nvim_win_call(win, function()
-    vim.cmd("normal! zt")
-  end)
-  session = { buf = buf, win = win }
+  session = { buf = buf, win = win, paused = false }
   emit_change()
   schedule_current_line()
   if not (opts and opts.notify == false) then
@@ -114,16 +121,57 @@ function M.start(opts)
   end
 end
 
+function M.pause(opts)
+  if not session or session.paused then
+    return false
+  end
+
+  generation = generation + 1
+  session.paused = true
+  emit_change()
+  if not (opts and opts.notify == false) then
+    vim.notify("Auto-scroll paused")
+  end
+  return true
+end
+
+function M.resume(opts)
+  if not session or not session.paused then
+    return false
+  end
+
+  if
+    not vim.api.nvim_win_is_valid(session.win)
+    or not vim.api.nvim_buf_is_valid(session.buf)
+    or vim.api.nvim_win_get_buf(session.win) ~= session.buf
+    or vim.api.nvim_get_current_win() ~= session.win
+  then
+    M.stop({ notify = false })
+    return false
+  end
+
+  session.paused = false
+  emit_change()
+  schedule_current_line()
+  if not (opts and opts.notify == false) then
+    local mode = reading_time().get_mode()
+    vim.notify(("Auto-scroll resumed at %s speed"):format(mode))
+  end
+  return true
+end
+
 function M.toggle()
   if M.is_active(vim.api.nvim_get_current_buf()) then
-    M.stop()
+    M.pause()
+  elseif M.is_paused(vim.api.nvim_get_current_buf()) then
+    M.resume()
   else
     M.start()
   end
 end
 
 function M.reschedule()
-  if session then
+  if session and not session.paused then
     schedule_current_line()
     emit_change()
   end
@@ -142,6 +190,7 @@ function M.setup()
     callback = function(event)
       if
         session
+        and not session.paused
         and event.buf == session.buf
         and vim.api.nvim_win_is_valid(session.win)
         and vim.api.nvim_win_get_cursor(session.win)[1] ~= session.scheduled_line
@@ -153,7 +202,7 @@ function M.setup()
   vim.api.nvim_create_autocmd({ "BufLeave", "WinLeave" }, {
     group = group,
     callback = function(event)
-      if M.is_active(event.buf) then
+      if belongs_to_session(event.buf) then
         M.stop({ notify = false })
       end
     end,
