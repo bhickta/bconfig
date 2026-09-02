@@ -31,7 +31,7 @@ assert_eq(opts.multi[2].source, "recent", "normal recent files should remain an 
 assert_eq(opts.multi[1].finder()[1].folder_root, root, "Folder View source should expose persisted roots")
 
 local closed = false
-opts.multi[1].confirm({
+opts.confirm({
   close = function()
     closed = true
   end,
@@ -39,6 +39,18 @@ opts.multi[1].confirm({
 vim.wait(100, function() return opened_root ~= nil end)
 assert_eq(closed, true, "selecting a Folder View should close the recent picker")
 assert_eq(opened_root, root, "selecting a Folder View should reopen it through the folder reader")
+
+local actual_actions = package.loaded["snacks.picker.actions"]
+local jumped_item
+package.loaded["snacks.picker.actions"] = {
+  jump = function(_, item)
+    jumped_item = item
+  end,
+}
+local recent_file = { file = root .. "/normal.md" }
+opts.confirm({}, recent_file, {})
+assert_eq(jumped_item, recent_file, "normal recent files should retain Snacks' standard confirm action")
+package.loaded["snacks.picker.actions"] = actual_actions
 
 local captured_options
 local normal_recent_calls = 0

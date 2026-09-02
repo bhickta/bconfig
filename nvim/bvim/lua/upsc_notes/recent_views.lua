@@ -23,6 +23,18 @@ function M.open_item(item)
   return true
 end
 
+local function confirm(picker, item, action)
+  if type(item) == "table" and type(item.folder_root) == "string" then
+    picker:close()
+    vim.schedule(function()
+      M.open_item(item)
+    end)
+    return
+  end
+
+  require("snacks.picker.actions").jump(picker, item, action)
+end
+
 function M.picker_options(items)
   items = items or M.items()
   if #items == 0 then
@@ -31,6 +43,7 @@ function M.picker_options(items)
 
   return {
     title = "Recent files and Folder Views",
+    confirm = confirm,
     multi = {
       {
         source = "folder_views",
@@ -45,12 +58,6 @@ function M.picker_options(items)
           }
         end,
         preview = "none",
-        confirm = function(picker, item)
-          picker:close()
-          vim.schedule(function()
-            M.open_item(item)
-          end)
-        end,
       },
       { source = "recent" },
     },
